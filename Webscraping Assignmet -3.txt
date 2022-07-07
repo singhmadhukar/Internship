@@ -1,0 +1,671 @@
+#import all the required libraries
+import pandas as pd
+import selenium
+from selenium import webdriver
+from selenium.common.exceptions import StaleElementReferenceException, NoSuchElementException
+import time
+import re
+7. Write a program to scrap all the available details of top 10 gaming laptops from digit.in.
+In [2]:
+driver = webdriver.Chrome(r"E:\Madhukar\chromedriver_win32\chromedriver.exe")
+In [92]:
+url="https://www.digit.in/top-products/best-gaming-laptops-40.html"
+In [93]:
+driver.get(url)
+In [94]:
+Brands=[]
+Products_Description=[]
+Specification=[]
+Price=[]
+In [104]:
+br=driver.find_elements_by_xpath("//div[@class='TopNumbeHeading active sticky-footer']")
+len(br)
+Out[104]:
+10
+In [105]:
+for i in br:
+   
+    Brands.append(str(i.text).replace("\n",""))
+Brands
+Out[105]:
+['1.MSI GT76 TITAN DT 9SG',
+ '2.ALIENWARE 17 AREA-51M',
+ '3.HP OMEN 15 2020',
+ '4.ASUS ZEPHYRUS G14',
+ '5.LENOVO LEGION Y540',
+ '6.ASUS ROG ZEPHYRUS G GA502',
+ '7.ASUS ROG ZEPHYRUS S GX531',
+ '8.MSI GT83VR 7RE TITAN SLI',
+ '9.ASUS ROG ZEPHYRUS DUO 15',
+ '10.DELL G3']
+In [97]:
+sp=driver.find_elements_by_xpath("//div[@class='Specs-Wrap']")
+len(sp)
+Out[97]:
+10
+In [98]:
+for i in sp:
+   
+    Specification.append(str(i.text).replace("\n",""))
+Specification
+Out[98]:
+['OSWINDOWS 10 PRODISPLAY17.3" (UHD 3840X2160)PROCESSORINTEL 9TH GEN CORE I9-9900K | 5000 MHZMEMORY1 TB HDD/64 GBGB DDR4',
+ 'OSWINDOWS 10 PRODISPLAY17.3" (FHD (1920 X 1080))PROCESSORINTEL 9TH GEN CORE I9-9900K | 5000 MHZMEMORY1 TB PCIE SSD/32GB DDR4',
+ 'OSWINDOWS 10 HOMEDISPLAY15.6" (1920 X 1080)PROCESSORINTEL I7-10750H 10TH GEN | 1.6GHZMEMORY512 GB SSD/16 GBGB DDR4',
+ 'OSWINDOWS 10 HOMEDISPLAY14" (1920 X 1080)PROCESSORAMD 3RD GENERATION RYZEN 9 | 3.3 GHZMEMORY1 TB SSD/16 GBGB DDR4',
+ 'OSWINDOWS 10 HOMEDISPLAY15.6" (1920 X 1080)PROCESSOR9TH GENERATION CORE INTEL I7-9750H | 2.6 GHZMEMORY1 TB SSD/8GB DDR4',
+ 'OSWINDOWS 10 HOMEDISPLAY15.6" (1920 X 1080)PROCESSORAMD RYZEN 7 QUAD CORE 3750H | 2.3 GHZMEMORY512 GB SSD/16GB DDR4',
+ 'OSWINDOWS 10 HOMEDISPLAY15.6" (1920 X 1080)PROCESSOR9TH GEN INTEL CORE I7-8750H | 2.2 GHZMEMORY512GB SSD/16 GBGB DDR4',
+ 'OSWINDOWS 10 HOME 64 BITDISPLAY18.4" (1920 X 1080)PROCESSORINTEL CM238 CORE I7-7820HK+CM238 7TH GEN | 3.5GHZMEMORY1.5 TB SATA/64GB DDR4',
+ 'OSWINDOWS 10DISPLAY15.6" (3840 X 1100)PROCESSORINTEL CORE I7 10TH GEN 10875H | NAMEMORY512 GB SSD/4 GBGB DDR4',
+ 'OSWINDOWS 10 HOME PLUSDISPLAY15.6 MP | NAPROCESSOR8TH GENERATION INTEL® CORE™ I7-8750H | NAMEMORY256 + 1 TB SSD + SATA/16GB DDR4']
+In [99]:
+des=driver.find_elements_by_xpath("//div[@class='Section-center']")
+len(des)
+Out[99]:
+10
+In [100]:
+for i in des:
+   
+    Products_Description.append(str(i.text).replace("\n",""))
+Products_Description
+Out[100]:
+['Sporting a desktop graphics Intel Core i9-9900K coupled with an RTX 2080, the MSI GT76 TITAN 9SG has the same configuration as the Alienware Area-51m. Both machines use massive power bricks which when plugged in trigger an automatic factory overclock of 32-33% for the processors. Even the graphics cards are the same RTX 2080 but MSI has a slightly higher base clock of 1575 MHz whereas the Alienware unit has that set to 1515 MHz. Boost clocks are also different with the MSI unit clocked at 1755 MHz and the Alienware at 1720 MHz. So performance wise, these two are nearly similar until you consider the next two important things in a computer, the RAM and the SSD boot drives. MSI’s gaming laptop has RAM clocked at 2666 MHz and uses two NVMe SSDs in RAID 0 for the boot drive.SPECIFICATIONOS : Windows 10 ProDisplay : 17.3" (UHD 3840x2160)Processor : Intel 9th Gen Core i9-9900K | 5000 MHzMemory : 1 TB HDD/64 GBGB DDR4Weight : 4.2 kgDimension : 397 x 330 x 33~42 mmGraphics Processor : NVIDIA GeForce RTX 2080Price : ₹379990',
+ 'The Alienware Area-51m was certainly the first of its kind to have the desktop grade Intel Core i9-9900K coupled with NVIDIA’s RTX 2080. However, as time goes by competitors brought similar configurations with slightly improved features. When powered on, the Area-51m automatically sets the processor to a 32% overclock which helps out with some video games and a lot more in high-compute tasks. The built-in Control Centre has made it even simpler to push the processor clocks higher should you need it.SPECIFICATIONOS : Windows 10 ProDisplay : 17.3" (FHD (1920 x 1080))Processor : Intel 9th Gen Core i9-9900K | 5000 MHzMemory : 1 TB PCIe SSD/32GB DDR4Weight : 3.87 KgDimension : 42 mm x 402.6 mm x 319.14 mmGraphics Processor : NVIDIA GeForce RTX 2080AVAILABLE ₹ 489909BUY NOW',
+ 'The new HP Omen 15 comes in both 10th generation Intel core and AMD Ryzen 4000 flavours. The company offers the choice of high refresh rate displays going up to 144Hz and also GPU options going up to an Nvidia GeForce RTX 2070 Super Max-Q. You also get a significantly improved thermals management system that actually manages to keep the laptop super cool even under heavy loads.ProsImpressive thermals.Performs well for gamers and content creators.The display is crisp and colour accurateConsThe lid wobbles and flexes.Nvidia GTX 1650Ti feels a little out of place in this config.SPECIFICATIONOS : Windows 10 HomeDisplay : 15.6" (1920 x 1080)Processor : Intel i7-10750H 10th Gen | 1.6GHzMemory : 512 GB SSD/16 GBGB DDR4Weight : 5.40Dimension : 14.09 x 9.44 x 0.89Graphics Processor : Nvidia GeForce GTX 1650TiAVAILABLE ₹ 117790BUY NOWAVAILABLE ₹ 121990BUY NOW',
+ 'The Asus Zephyrus G14 is a first-of-its-kind gaming laptop, featuring a high-power 8-core CPU in a 14-inch chassis. Powered by the AMD Ryzen 4000 series processors going all the way up to Ryzen 9 4900HS and an Nvidia GeForce RTX 2060, the AMD Zephyrus G14 is a perfect laptop for those kind of people who like to game and create, but put a priority on doing so using a light-weight machine.ProsImpressive performance for the form-factor.Anime Matrix display is a very well implemented gimmick.Truly one-of-a-kind machine at the moment.ConsHeat makes the keyboard unusable.Uses a mid-range SSD.No Pg Up or Pg Dn keysSPECIFICATIONOS : Windows 10 HomeDisplay : 14" (1920 x 1080)Processor : AMD 3rd Generation Ryzen 9 | 3.3 GHzMemory : 1 TB SSD/16 GBGB DDR4Weight : 1.65Dimension : 32.5 x 22.1 x 1.8Graphics Processor : NVIDIA GeForce RTX 2060AVAILABLE ₹ 164990BUY NOW',
+ 'The Lenovo Legion Y540 is powered by an Intel Core i7-9750H, 16GB of RAM and an Nvidia GeForce RTX 2060 with 6GB of video RAM. The laptop also comes with up to a 1TB Samsung PCIe NVMe solid-state drive, and users looking to expand storage get the option of adding a 2.5-inch hard drive. The display is an IPS pane with a 144Hz refresh rate, but the real highlight of the Legion Y540, besides its performance, is its stealth looks that allows the laptop to blend into an office environment as easily as it would into a LAN party.ProsSturdy build, clean lookTop performance (incl. gaming)Decent audio qualityConsAbysmally short battery lifeOddly placed keysRear ports are inconvenientSPECIFICATIONOS : Windows 10 HomeDisplay : 15.6" (1920 X 1080)Processor : 9th Generation Core Intel I7-9750H | 2.6 GhzMemory : 1 TB SSD/8GB DDR4Weight : 2.3Dimension : 365mm x 260mm x 25.9mmGraphics Processor : NVIDIA® GeForce RTX™ 2060OUT OF STOCK ₹ 79990BUY NOWAVAILABLE ₹ 178690BUY NOW',
+ 'The Ryzen 7 3750H powered Asus ROG Zephyrus G is a budget-friendly gaming laptop that offers just enough fire power to get you into the world of PC gaming. The Nvidia GeForce GTX 1660Ti takes care of all your gaming needs, driving the 120Hz IPS panel with relative easeProsNoteworthy performanceComfortable keyboardSurprisingly good audioConsNoisy fans can distractDisplay could use more colourNo inbuilt webcamSPECIFICATIONOS : Windows 10 HomeDisplay : 15.6" (1920 x 1080)Processor : AMD Ryzen 7 Quad Core 3750H | 2.3 GHzMemory : 512 GB SSD/16GB DDR4Weight : 2.2Dimension : 360 x 252 x 20.4Graphics Processor : NVIDIA Geforce GTX 1660 TiOUT OF STOCK ₹ 79990BUY NOW',
+ 'The Asus Zephyrus S (GX531) manages to get a few things very right. It packs a very powerful set of components into a slim chassis, ideal for those who like to carry their gaming or editing machines around. The Pantone validated 144Hz display is great right out of the box. the keyboard will take plenty of getting used to, but the trackpad is definitely a strong point. All this aside, the GX531 is also a pretty great gaming machine.SPECIFICATIONOS : Windows 10 HomeDisplay : 15.6" (1920 X 1080)Processor : 9th Gen Intel Core i7-8750H | 2.2 GHzMemory : 512GB SSD/16 GBGB DDR4Weight : 2.1Dimension : 360 (W) x 268 (D) x 15.35~16.15 (H) mmGraphics Processor : NVIDIA® GeForce RTX™ 2070 (Max-Q)AVAILABLE ₹ 146000BUY NOWAVAILABLE ₹ 239990BUY NOW',
+ 'MSI does not have a dual GTX 1080 gaming laptop. Instead, it has the next best thing for roughly half the price of the two flagships. The GT83VR 7RE Titan SLI packs two GTX 1070 GPUs in SLI along with the Intel Core i7 7820HK. It also has a massive 18.4-inch IPS display and 32 GB of RAM. Performance wise it isn\'t that far behind since games can hardly make use of all the firepower it has, but synthetic benchmarks put it way behind the two flagships mentioned here.SPECIFICATIONOS : Windows 10 Home 64 bitDisplay : 18.4" (1920 x 1080)Processor : Intel CM238 Core i7-7820HK+CM238 7th Gen | 3.5GHzMemory : 1.5 TB SATA/64GB DDR4Weight : 5.5Dimension : 458 x 339 x 69Graphics Processor : Dual GTX1070Price : ₹349990',
+ 'The machine is powered by an Intel Core i7-10875H processor, offering 8 cores and 16 threads. So, you can leave behind all your concerns around the CPU bottlenecking the overall performance during gaming. With an Nvidia GeForce RTX 2070 Max-Q, this laptop can manage pretty much anything game you throw at it and then some more. The star of the show however is the awesome 300Hz refresh rate capable, 1080p IPS panel on this gaming laptop. Yes, you read that correctly, 300Hz, which means you can get silky smooth, brag-worthy 300FPS on e-sports centric games on this machine.SPECIFICATIONOS : Windows 10Display : 15.6" (3840 x 1100)Processor : Intel Core i7 10th Gen 10875H | NAMemory : 512 GB SSD/4 GBGB DDR4Weight : 2.4Dimension : 268.30 x 360.00 x 20.90Graphics Processor : NVIDIA GeForce RTX 2070 Max-QAVAILABLE ₹ 268990BUY NOW',
+ "The Dell G3 is a capable entry-level gaming laptop in an Inspiron's clothes. It has a 9th-gen Intel Core i5 CPU, up to 8GB of RAM, and an NVIDIA GeForce GTX 1650 with 4GB of GDDR5 video RAM. For storage, it's got a 512GB PCIe NVMe SSD. It plays games like Doom on high graphics settings at 60fps without any stutters.ProsSeriously fast fingerprint scannerSpeakers are quite loudStays cool when clock rates riseConsBulky at 2.53 kilogrammesKeys lack sufficient travelColours appear washed outSPECIFICATIONOS : Windows 10 Home PlusDisplay : 15.6 MP | NAProcessor : 8th Generation Intel® Core™ i7-8750H | NAMemory : 256 + 1 TB SSD + SATA/16GB DDR4Weight : 2.53Dimension : 22.7 X 380 X 258Graphics Processor : NVIDIA® GeForce® GTXAVAILABLE ₹ 61990BUY NOW"]
+In [101]:
+pri=driver.find_elements_by_xpath("//td[@class='smprice']")
+len(pri)
+Out[101]:
+10
+In [102]:
+for i in pri:
+   
+    Price.append(str(i.text).replace("\n",""))
+Price
+Out[102]:
+['₹379990',
+ '₹489909',
+ '₹117790',
+ '₹164990',
+ '₹79990',
+ '₹79990',
+ '₹146000',
+ '₹349990',
+ '₹268990',
+ '₹61990']
+In [ ]:
+ 
+In [106]:
+digit_lap=pd.DataFrame([])
+digit_lap['Brands']=Brands[0:10]
+digit_lap['Price']=Price[0:10]
+digit_lap['Specification']=Specification[0:10]
+digit_lap['Description']=Products_Description[0:10]
+digit_lap
+Out[106]:
+	Brands	Price	Specification	Description
+0	1.MSI GT76 TITAN DT 9SG	₹379990	OSWINDOWS 10 PRODISPLAY17.3" (UHD 3840X2160)PR...	Sporting a desktop graphics Intel Core i9-9900...
+1	2.ALIENWARE 17 AREA-51M	₹489909	OSWINDOWS 10 PRODISPLAY17.3" (FHD (1920 X 1080...	The Alienware Area-51m was certainly the first...
+2	3.HP OMEN 15 2020	₹117790	OSWINDOWS 10 HOMEDISPLAY15.6" (1920 X 1080)PRO...	The new HP Omen 15 comes in both 10th generati...
+3	4.ASUS ZEPHYRUS G14	₹164990	OSWINDOWS 10 HOMEDISPLAY14" (1920 X 1080)PROCE...	The Asus Zephyrus G14 is a first-of-its-kind g...
+4	5.LENOVO LEGION Y540	₹79990	OSWINDOWS 10 HOMEDISPLAY15.6" (1920 X 1080)PRO...	The Lenovo Legion Y540 is powered by an Intel ...
+5	6.ASUS ROG ZEPHYRUS G GA502	₹79990	OSWINDOWS 10 HOMEDISPLAY15.6" (1920 X 1080)PRO...	The Ryzen 7 3750H powered Asus ROG Zephyrus G ...
+6	7.ASUS ROG ZEPHYRUS S GX531	₹146000	OSWINDOWS 10 HOMEDISPLAY15.6" (1920 X 1080)PRO...	The Asus Zephyrus S (GX531) manages to get a f...
+7	8.MSI GT83VR 7RE TITAN SLI	₹349990	OSWINDOWS 10 HOME 64 BITDISPLAY18.4" (1920 X 1...	MSI does not have a dual GTX 1080 gaming lapto...
+8	9.ASUS ROG ZEPHYRUS DUO 15	₹268990	OSWINDOWS 10DISPLAY15.6" (3840 X 1100)PROCESSO...	The machine is powered by an Intel Core i7-108...
+9	10.DELL G3	₹61990	OSWINDOWS 10 HOME PLUSDISPLAY15.6 MP | NAPROCE...	The Dell G3 is a capable entry-level gaming la...
+In [ ]:
+ 
+6. Write a program to scrap details of all the funding deals for second quarter (i.e. July 20 – September 20) from trak.in.
+In [2]:
+driver = webdriver.Chrome(r"E:\Madhukar\chromedriver_win32\chromedriver.exe")
+In [3]:
+url1="https://trak.in/india-startup-funding-investment-2015/"
+In [4]:
+driver.get(url1)
+In [5]:
+Dates=[]
+Company=[]
+Industry=[]
+Investor_Name=[]
+Investment_Type=[]
+Amount=[]
+In [6]:
+#scraping the company_name 
+companies=driver.find_elements_by_xpath("//td[@class='column-3']")
+for i in companies:
+    if i.text is None :
+        Company.append("--") 
+    else:
+        Company.append(i.text)
+print(len(Company),Company)
+371 ['Digit Insurance', 'Bombay Shaving Company', 'DeHaat', 'Darwinbox', 'mfine', 'Udayy', 'True Elements', 'Saveo', 'Bira 91', 'Pine Labs', 'Zenoti', 'Tax Buddy India', 'Delhivery', 'PagarBook', 'Codingal', 'CRED', 'Bira 91', 'Chumbak', 'Cityflo', 'Shipsy', 'Unacademy', 'Cashfree', 'Credgenics', 'Country Delight', 'Nykaa', 'Betterplace', 'FlexiLoans', 'GetVantage', 'FreshToHome', 'Origo', 'Origo', 'Treebo Hotels', 'Hubilo', 'CredAble', 'Byju’s', 'mCaffeine', 'Qshala', 'Winzo', 'Hippo Video', 'Melorra', '1mg', 'mfine', 'Apna', 'Railofy', 'Practo', 'Medlife', 'HungerBox', 'Dunzo', 'Terra.do', 'Classplus', 'Niyo', 'ZestMoney', 'FreshToHome', 'Eduvanz', 'Flipkart', 'Vedantu', 'Crio', 'goDutch', 'Mystifly', 'JetSynthesys', 'gigIndia', 'PumPumPum', 'FLYX', 'Open Appliances Pvt. Ltd.', 'Drishti Technologies', 'Stellaps', 'Peppermint', 'Jai Kisan', 'Biomoneta', 'Sai Estate Management and Skills Institute', 'LetsTransport', 'WayCool Foods', 'Myelin Foundry', 'Hapramp', 'leap.club', 'Tring', 'Khatabook', 'Vakilsearch', 'Lendingkart', 'No Worry No Tension Healthcare (NWNT)', 'Classplus', 'Nykaa', 'Magicpin', 'LetsTransport', 'Vedantu', 'Swiggy', 'Zupee', 'DeHaat', 'BigBasket', 'Fingerlix', 'Nykaa', 'Recko', 'Soxytoes', 'Chqbook.com', 'Paperboat', 'CollegeKhabri', 'FamPay', 'MultiLiving', 'Ola Electric', 'Mera Kisan', '1mg', 'RACEnergy', 'Adonmo', 'DoubtNut', 'MultiplyMyLeads', 'Embibe', 'FirstCry', 'Pepperfry', 'MaxWholesale', 'Dot', 'BYJU’S', 'Shuttl', 'Mamaearth', 'https://www.wealthbucket.in/', 'Fashor', 'Pando', 'Zomato', 'Ecozen', 'CarDekho', 'Dhruva Space', 'Rivigo', 'Healthians', 'Licious', 'InCred', 'Trell', 'Rein Games', 'Lenskart.com', 'Freshworks', 'Misters', 'Sunstone Eduversity Pvt. Ltd', 'Burger Singh', 'Healthians', 'Ninjacart', 'Aye Finance', 'SuperGaming', 'Clumio', 'eBikeGo', 'Dunzo', 'Udaan', 'The Man Company', 'FPL Technologies', 'Cashflo', 'Digital F5', '3rdFlix', '75F', 'Myelin Foundry', 'Atomberg Technology', 'GOQii', 'Vyapar App', '', 'CarDekho', 'Progcap', 'MyPetrolPump', 'Alteria Capital', 'Pine Labs', 'Meesho', 'Cars24', 'Uniphore', 'Zendrive', 'Lo! Foods', 'RenewBuy', 'Atlan', 'WizCounsel', 'Ola Cabs', 'Uniphore', 'Daalchini Technologies', "BYJU'S", 'Moglix', 'Ezyhaul', 'Indus OS', 'NoBroker', 'Bira91', 'FabHotels', 'Avail Finance', 'BharatPe', 'Recykal', 'Agara Labs', 'Sistema.bio', 'Chakr Innovation', 'Pratilipi', 'Ola Electric', 'Saahas Zero Waste', 'StyleDotMe', 'BlackBuck', 'Zenoti', 'Ather Energy', 'FreshVnF', 'GlowRoad', 'Bira91', 'Kuvera', 'Medlife', 'Kabadiwala', 'Tripoto', 'Azah', 'Setu', 'Toppr', 'Craftsvilla', 'Unacademy', 'CleverTap', 'FleetX', 'Zilingo', 'NanoClean Global', 'OyoRooms', 'CarDekho', 'Vyome Therapeutics Inc.', 'Samunnati Financial Intermediation & Services Pvt. Ltd', 'Manch', 'UrbanClap Technologies Pvt. Ltd', 'Guiddoo', 'Career Anna', 'Nagpur Wholesale', 'ShopKirana', 'BuildSupply', 'GoDesi', 'Veritas Finance Ltd.', 'Meesho', 'Mobile Premier League', 'A&R Bon Vivants', 'Blackbuck', 'MilkBAsket', 'DriveU', 'CleanseCar', 'Automation Anywhere', 'Northmist', 'Origo Commodities India Pvt. Ltd', 'Grover Zampa', 'Droom', 'Innov8', 'Blackbuck', 'LetsTransport', 'Netmeds', 'Udaan', 'Daily hunt', '3HCare', 'HappyGoEasy', 'Nykaa', 'Mad Street Den', 'Dream11', 'MamaEarth', 'AutoGrid', 'dishq', 'HealthFin', 'Samosa Labs', 'ZiffyHomes', 'My OmNamo', 'ShopX', 'MakeMyTrip', 'Hansel io', 'Metro Bikes', 'Phone Pe', 'Leena AI', 'Biryani By Kilo', 'Anchanto', 'Loan Tap', 'PolicyBazaar', 'zippserv', 'Groww', 'Avenue Growth', 'iNICU', 'Kinara Capital', 'Northmist', 'Origo Commodities India Pvt. Ltd', 'Grover Zampa', 'Droom', 'Innov8', 'Blackbuck', 'LetsTransport', 'Netmeds', 'Udaan', 'Daily hunt', '3HCare', 'HappyGoEasy', 'Nykaa', 'Mad Street Den', 'Dream11', 'MamaEarth', 'AutoGrid', 'dishq', 'HealthFin', 'Samosa Labs', 'ZiffyHomes', 'My OmNamo', 'ShopX', 'MakeMyTrip', 'Hansel io', 'Metro Bikes', 'Phone Pe', 'Leena AI', 'Biryani By Kilo', 'Anchanto', 'Loan Tap', 'PolicyBazaar', 'zippserv', 'Groww', 'Avenue Growth', 'iNICU', 'Kinara Capital', 'Northmist', 'Origo Commodities India Pvt. Ltd', 'Grover Zampa', 'Droom', 'Innov8', 'Blackbuck', 'LetsTransport', 'Netmeds', 'Udaan', 'Daily hunt', '3HCare', 'HappyGoEasy', 'Nykaa', 'Mad Street Den', 'Dream11', 'MamaEarth', 'AutoGrid', 'dishq', 'HealthFin', 'Samosa Labs', 'ZiffyHomes', 'My OmNamo', 'ShopX', 'MakeMyTrip', 'Hansel io', 'Metro Bikes', 'Phone Pe', 'Leena AI', 'Biryani By Kilo', 'Anchanto', 'Loan Tap', 'PolicyBazaar', 'zippserv', 'Groww', 'Avenue Growth', 'iNICU', 'Kinara Capital', 'Northmist', 'Origo Commodities India Pvt. Ltd', 'Grover Zampa', 'Droom', 'Innov8', 'Blackbuck', 'LetsTransport', 'Netmeds', 'Udaan', 'Daily hunt', '3HCare', 'HappyGoEasy', 'Nykaa', 'Mad Street Den', 'Dream11', 'MamaEarth', 'AutoGrid', 'dishq', 'HealthFin', 'Samosa Labs', 'ZiffyHomes', 'My OmNamo', 'ShopX', 'MakeMyTrip', 'Hansel io', 'Metro Bikes', 'Phone Pe', 'Leena AI', 'Biryani By Kilo', 'Anchanto', 'Loan Tap', 'PolicyBazaar', 'zippserv', 'Groww', 'Avenue Growth', 'iNICU', 'Kinara Capital']
+In [7]:
+#scraping the Industry 
+Ind=driver.find_elements_by_xpath("//td[@class='column-4']")
+for i in Ind:
+    if i.text is None :
+        Industry.append("--") 
+    else:
+        Industry.append(i.text)
+print(len(Industry),Industry)
+371 ['Financial Services', 'Consumer Goods Company', 'AgriTech Startup', 'SaaS', 'Health Tech Startup', 'EdTech', 'Food Startup', 'B2B E-commerce', 'Food and Beverage', 'Financial Services', 'Technology Provider', 'FinTech', 'Supply chain', 'SaaS', 'EduTech', 'Financial Services', 'Food and Beverage', 'Lifestyle', 'Transportation', 'SaaS', 'Edutech', 'FinTech', 'Fintech', 'Dairy Tech', 'E-commerce', 'Digital Solutions', 'FinTech', 'FinTech', 'E-commerce', 'AgriTech', 'Advertising', 'Hospitality', 'Information Technology', 'FinTech', 'EduTech', 'Personal Care', 'EduTech', 'Online Gaming', 'Video Customer Experience(CX) Platform', 'E-commerce', 'E-commerce', 'HealthTech', 'Human Resources', 'Transportation', 'HealthTech', 'E-commerce', 'FoodTech', 'Hyper-local Logistics', 'EduTech', 'EduTech', 'FinTech', 'FinTech', 'E-commerce', 'FinTech', 'E-commerce', 'EduTech', 'EduTech', 'FinTech', 'Airfare Marketplace', 'Gaming and Entertainment', 'Marketplace', 'Automotive Rental', 'OTT Player', 'Information Technology', 'Technology', 'AgriTech', 'Industrial Robotics', 'Rural FinTech', 'BioTech', 'EdTech', 'Logistics Solution Provider', 'AgriTech', 'Deep Tech AI', 'Block Chain, Cryptocurrency', 'Professional Network for Women', 'Advertising', 'Utility Solutions Provider', 'LegalTech', 'FinTech', 'Healthcare', 'EduTech', 'E-commerce', 'E-commerce', 'Logistics Solution Provider', 'EduTech', 'Online Food Delivery', 'Gaming', 'AgriTech', 'E-commerce', 'Food Delivery', 'E-commerce', 'Digital Reconcilation and Financial Services', 'E-commerce', 'Finance', 'E-commerce', 'EduTech', 'Finance', 'Real Estate', 'Transport', 'Food Production', 'E-commerce', 'Transportation', 'Advertising', 'Education', 'Real Estate', 'EduTech', 'E-commerce', 'E-commerce', 'E-commerce', 'Information Technology and Services', 'E-Tech', 'Transportation', 'E-commerce', 'FinTech', 'Fashion and Apparel', 'Logistics', 'Hospitality', 'Technology', 'E-Commerce', 'Aerospace', 'Technology', 'B2B-focused foodtech startup', 'E-Commerce', 'Finance', 'Video', 'Gaming', 'E-Commerce', 'Software', 'Health and wellness', 'Education', 'Food and Beverage', 'Health and Wellness', 'B2B Marketing', 'FinTech', 'Video Games', 'SaaS', 'Last Mile Transportation', 'Customer Service', 'B2B', 'Consumer Goods', 'FinTech', 'FinTech', 'Advertising, Marketing', 'SaaS', 'IoT', 'Information Technology', 'Consumer Technology', 'Health and Wellness', 'Accounting', '', 'E-Commerce', 'Finance', 'Retail', 'Finance', 'Information Technology', 'E-Commerce', 'E-Commerce', 'Customer Service Platform', 'Automotive', 'Consumer Goods', 'Finance', 'Information Technology', 'Compliance', 'Transport', 'Artificial Intelligence', 'Food and Beverage', 'EdTech', 'E-Commerce', 'Tech', 'Tech', 'E-Commerce', 'Food and Beverage', 'E-Commerce', 'Finance', 'Finance', 'Waste Management Service', 'Deep-Tech', 'Agriculture', 'Energy', 'Digital Media', 'Transport', 'Waste Management Service', 'E-commerce', 'Transport', 'Saas', 'Automobile', 'Agtech', 'E-commerce', 'Food and Beverage', 'Finance', 'E-commerce', 'E-commerce', 'Social Media', 'Health and Wellness', 'Fintech', 'Edtech', 'E-commerce', 'Edtech', 'SaaS', 'AI', 'Ecommerce', 'Nanotechnology', 'Hospitality', 'Automobile', 'Health and Wellness', 'Finance', 'Social Media', 'Services Platform', 'Travel Tech', 'Online Education', 'Online Marketplace', 'B2B', 'SaaS, Ecommerce', 'Food and Beverage', 'NBFC', 'Ecommerce', 'Gaming', 'Food', 'Food Tech', 'Food', 'Transport', 'Services', 'Automation', 'Fashion', 'Logistics', 'Food', 'Automobile', 'Real Estate', 'Logistics Tech', 'Logistics Tech', 'Consumer Internet', 'B2B Platform', 'Consumer Internet', 'Healthcare', 'Consumer Internet', 'Consumer Internet', 'Technology', 'Consumer Internet', 'Healthcare', 'Technology', 'Food-Tech', 'Finance', 'Consumer Internet', 'Consumer Internet', 'Consumer Internet', 'Consumer Internet', 'Consumer Internet', 'Consumer Internet', 'Consumer Internet', 'Consumer Internet', 'Technology', 'Consumer Internet', 'IT', 'Consumer Internet', 'Consumer Internet', 'Consumer Internet', 'Consumer Internet', 'Consumer Internet', 'Healthcare', 'Finance', 'Fashion', 'Logistics', 'Food', 'Automobile', 'Real Estate', 'Logistics Tech', 'Logistics Tech', 'Consumer Internet', 'B2B Platform', 'Consumer Internet', 'Healthcare', 'Consumer Internet', 'Consumer Internet', 'Technology', 'Consumer Internet', 'Healthcare', 'Technology', 'Food-Tech', 'Finance', 'Consumer Internet', 'Consumer Internet', 'Consumer Internet', 'Consumer Internet', 'Consumer Internet', 'Consumer Internet', 'Consumer Internet', 'Consumer Internet', 'Technology', 'Consumer Internet', 'IT', 'Consumer Internet', 'Consumer Internet', 'Consumer Internet', 'Consumer Internet', 'Consumer Internet', 'Healthcare', 'Finance', 'Fashion', 'Logistics', 'Food', 'Automobile', 'Real Estate', 'Logistics Tech', 'Logistics Tech', 'Consumer Internet', 'B2B Platform', 'Consumer Internet', 'Healthcare', 'Consumer Internet', 'Consumer Internet', 'Technology', 'Consumer Internet', 'Healthcare', 'Technology', 'Food-Tech', 'Finance', 'Consumer Internet', 'Consumer Internet', 'Consumer Internet', 'Consumer Internet', 'Consumer Internet', 'Consumer Internet', 'Consumer Internet', 'Consumer Internet', 'Technology', 'Consumer Internet', 'IT', 'Consumer Internet', 'Consumer Internet', 'Consumer Internet', 'Consumer Internet', 'Consumer Internet', 'Healthcare', 'Finance', 'Fashion', 'Logistics', 'Food', 'Automobile', 'Real Estate', 'Logistics Tech', 'Logistics Tech', 'Consumer Internet', 'B2B Platform', 'Consumer Internet', 'Healthcare', 'Consumer Internet', 'Consumer Internet', 'Technology', 'Consumer Internet', 'Healthcare', 'Technology', 'Food-Tech', 'Finance', 'Consumer Internet', 'Consumer Internet', 'Consumer Internet', 'Consumer Internet', 'Consumer Internet', 'Consumer Internet', 'Consumer Internet', 'Consumer Internet', 'Technology', 'Consumer Internet', 'IT', 'Consumer Internet', 'Consumer Internet', 'Consumer Internet', 'Consumer Internet', 'Consumer Internet', 'Healthcare', 'Finance']
+In [8]:
+#scraping the Dates 
+dt=driver.find_elements_by_xpath("//td[@class='column-2']")
+for i in dt:
+    if i.text is None :
+        Dates.append("--") 
+    else:
+        Dates.append(i.text)
+print(len(Dates),Dates)
+371 ['15/01/2021', '28/01/2021', '19/01/2021', '19/01/2021', '18/01/2021', '18/01/2021', '11/01/2021', '13/01/2021', '15/12/2020', '21/12/2020', '15/12/2020', '22/12/2020', '15/12/2020', '18/12/2020', '30/11/2020', '30/11/2020', '29/11/2020', '27/11/2020', '25/11/2020', '25/11/2020', '25/11/2020', '24/11/2020', '30/11/2020', '23/11/2020', '28/10/2020', '28/10/2020', '28/10/2020', '27/10/2020', '27/10/2020', '27/10/2020', '27/10/2020', '15/10/2020', '26/10/2020', '28/10/2020', '08/09/2020', '12/09/2020', '09/09/2020', '02/09/2020', '09/09/2020', '07/09/2020', '07/09/2020', '31/08/2020', '31/08/2020', '03/09/2020', '15/08/2020', '13/08/2020', '13/08/2020', '04/08/2020', '11/08/2020', '12/08/2020', '14/08/2020', '10/08/2020', '07/08/2020', '13/08/2020', '15/07/2020', '16/07/2020', '16/07/2020', '14/07/2020', '13/07/2020', '09/07/2020', '10/07/2020', '15/07/2020', '14/07/2020', '13/07/2020', '18/06/2020', '17/06/2020', '17/06/2020', '16/06/2020', '16/06/2020', '15/06/2020', '15/06/2020', '10/06/2020', '11/06/2020', '10/06/2020', '21/05/2020', '20/05/2020', '20/05/2020', '19/05/2020', '19/05/2020', '21/05/2020', '05/05/2020', '11/05/2020', '13/05/2020', '18/05/2020', '09/04/2020', '06/04/2020', '08/04/2020', '07/04/2020', '15/04/2020', '08/04/2020', '31/03/2020', '02/04/2020', '04/03/2020', '02/03/2020', '06/03/2020', '13/03/2020', '12/03/2020', '12/03/2020', '12/03/2020', '12/03/2020', '03/02/2020', '03/02/2020', '31/01/2020', '31/01/2020', '30/01/2020', '03/02/2020', '10/02/2020', '10/02/2020', '18/02/2020', '06/02/2020', '09/01/2020', '13/01/2020', '09/01/2020', '02/01/2020', '02/01/2020', '13/01/2020', '10/01/2020', '12/12/2019', '06/12/2019', '3/12/2019', '13/12/2019', '17/12/2019', '16/12/2019', '16/12/2019', '14/12/2019', '11/12/2019', '20/12/2019', '13/11/2019', '14/11/2019', '13/11/2019', '17/11/2019', '18/11/2019', '15/11/2019', '20/11/2019', '12/11/2019', '20/11/2019', '11/11/2019', '04/10/2019', '02/10/2019', '21/10/2019', '05/09/2019', '04/09/2019', '04/09/2019', '04/09/2019', '04/09/2019', '04/09/2019', '04/09/2019', '04/09/2019', '03/09/2019', '', '01/08/2019', '01/08/2019', '01/08/2019', '01/08/2019', '01/08/2019', '12/08/2019', '13/08/2019', '13/08/2019', '23/08/2019', '23/08/2019', '02/07/2019', '02/07/2019', '01/07/2019', '03/07/2019', '01/07/2019', '04/07/2019', '10/07/2019', '11/07/2019', '10/07/2019', '10/07/2019', '05/06/2019', '04/06/2019', '03/06/2019', '03/06/2019', '04/06/2019', '04/06/2019', '03/06/2019', '06/06/2019', '06/06/2019', '06/06/2019', '06/05/2019', '06/05/2019', '05/05/2019', '01/05/2019', '02/05/2019', '28/05/2019', '28/05/2019', '30/05/2019', '31/05/2019', '16/04/2019', '12/04/2019', '10/04/2019', '13/04/2019', '12/04/2019', '11/04/2019', '10/04/2019', '10/04/2019', '10/04/2019', '11/04/2019', '1/02/2019', '8/02/2019', '13/02/2019', '14/02/2018', '03/01/2019', '04/01/2019', '04/01/2019', '04/12/2018', '01/12/2018', '02/12/2018', '02/12/2018', '04/12/2018', '06/12/2018', '06/12/2018', '01/11/2018', '03/11/2018', '06/11/2018', '08/11/2018', '8/11/2018', '12/11/2018', '12/11/2018', '13/11/2018', '14/11/2018', '19/11/2018', '01/10/2018', '02/10/2018', '04/10/2018', '05/10/2018', '11/10/2018', '12/10/2018', '12/10/2018', '01/09/2018', '03/09/2018', '03/09/2018', '04/09/2018', '04/09/2018', '05/09/2018', '05/09/2018', '06/09/2018', '10/09/2018', '11/09/2018', '01/08/2018', '01/08/2018', '02/08/2018', '03/08/2018', '07/08/2018', '07/08/2018', '07/08/2018', '08/08/2018', '08/08/2018', '08/08/2018', '01/07/2018', '02/07/2018', '04/07/2018', '05/072018', '06/07/2018', '09/07/2018', '09/07/2018', '10/07/2018', '10/07/2018', '10/07/2018', '01/10/2018', '02/10/2018', '04/10/2018', '05/10/2018', '11/10/2018', '12/10/2018', '12/10/2018', '01/09/2018', '03/09/2018', '03/09/2018', '04/09/2018', '04/09/2018', '05/09/2018', '05/09/2018', '06/09/2018', '10/09/2018', '11/09/2018', '01/08/2018', '01/08/2018', '02/08/2018', '03/08/2018', '07/08/2018', '07/08/2018', '07/08/2018', '08/08/2018', '08/08/2018', '08/08/2018', '01/07/2018', '02/07/2018', '04/07/2018', '05/072018', '06/07/2018', '09/07/2018', '09/07/2018', '10/07/2018', '10/07/2018', '10/07/2018', '01/10/2018', '02/10/2018', '04/10/2018', '05/10/2018', '11/10/2018', '12/10/2018', '12/10/2018', '01/09/2018', '03/09/2018', '03/09/2018', '04/09/2018', '04/09/2018', '05/09/2018', '05/09/2018', '06/09/2018', '10/09/2018', '11/09/2018', '01/08/2018', '01/08/2018', '02/08/2018', '03/08/2018', '07/08/2018', '07/08/2018', '07/08/2018', '08/08/2018', '08/08/2018', '08/08/2018', '01/07/2018', '02/07/2018', '04/07/2018', '05/072018', '06/07/2018', '09/07/2018', '09/07/2018', '10/07/2018', '10/07/2018', '10/07/2018', '01/10/2018', '02/10/2018', '04/10/2018', '05/10/2018', '11/10/2018', '12/10/2018', '12/10/2018', '01/09/2018', '03/09/2018', '03/09/2018', '04/09/2018', '04/09/2018', '05/09/2018', '05/09/2018', '06/09/2018', '10/09/2018', '11/09/2018', '01/08/2018', '01/08/2018', '02/08/2018', '03/08/2018', '07/08/2018', '07/08/2018', '07/08/2018', '08/08/2018', '08/08/2018', '08/08/2018', '01/07/2018', '02/07/2018', '04/07/2018', '05/072018', '06/07/2018', '09/07/2018', '09/07/2018', '10/07/2018', '10/07/2018', '10/07/2018']
+In [9]:
+#scraping the Investor_Name 
+IN=driver.find_elements_by_xpath("//td[@class='column-7']")
+for i in IN:
+    if i.text is None :
+        Investor_Name.append("--") 
+    else:
+        Investor_Name.append(i.text)
+print(len(Investor_Name),Investor_Name)
+371 ['A91 Partners, Faering Capital, TVS Capital Funds', 'Reckitt Benckiser', 'Prosus Ventures', 'Salesforce Ventures', 'Heritas Capital Management', 'Sequoia Capital', 'SIDBI Venture Capital', 'Matrix Partners India, RTP Global, others', 'Nishant Mittal, Pankaj Chaddah and Shikha Sunil Chandak', 'Lone Pine Capital', 'Advent International', 'Zenith Global', 'Steadview Capital', 'Sequoia Capital', 'Rebright Partners, Java Capital, and GSF Accelerator', 'DST Global', 'Sofina, Sequoia Capital, Sixth Sense Ventures, Neoplux', 'Gaja Capital Fund (GCFII-A)', 'Lightbox Ventures', 'Sequoia Capital India’s Surge, Info Edge', 'Tiger Global Management, Dragoneer Investment Group', 'Matrix Partners India, SAIF Partners, Ward Ferry Management and Bertelsmann India', 'Venture Capital firm, Accel Partners and DMI Finance', 'Elevation Capital', 'Alia Bhatt', 'Jungle Ventures', 'Falguni and Sanjay Nayar Family Office', 'Chiratae Ventures, Dream Incubators', 'Corporation of Dubai (ICD), Ascent Capital, DFC, the Allana Group', 'Northern Arc Capital', 'Sequoia Capital India', 'Matrix Partners India, SAIF Partners, Ward Ferry Management and Bertelsmann India', 'Lightspeed Venture Partners', 'Oaks Asset Management and V’Ocean Investment', 'Silver Lake, Tiger Global, General Atlantic and Owl Ventures', 'Amicus Capital Private Equity I LLP, Amicus Capital Partners India Fund I and RP-SG Venture Fund 1', 'Rainmatter Capital', 'Kalaari Capital Partners, IndigoEdge Management Consultancy', 'Alpha Wave Incubation, Exfinity Venture Partners and existing backers.', 'Shadow Holdings, Lightbox.', 'Gaja Capital, Tata Capital, Partners Group', 'Caretech Pte Inc', 'Lightspeed India and Sequoia Capital India', 'Chiratae Ventures', 'A1A Company', 'Prasid Uno Family Trust and SC Credit Fund', 'One97, Sabre Partners Trust, Pratithi Investment Trust, and Srihari Kumar', 'Existing Backers', 'Stanford Angels and Entrepreneurs (India), BEENEXT Emerging Asia, Rainmatter Capital', 'Falcon Edge', 'Niyo Solutions Inc.', 'Primrose Hills Ventures', 'Ascent Capital', 'Sequoia India, Unitus', 'Walmart Inc', 'Coatue Management', '021 Capital', 'Matrix India,Y Combinator, Global Founders Capital, Soma Capital, and VentureSouq.', 'Recruit Co. Ltd.', 'Adar Poonawalla and Kris Gopalakrishnan.', 'Incubate Fund India and Beyond Next Ventures', 'Early Adapters Syndicate', 'Raj Mishra, founder of AIT Global Inc', 'Unicorn India Ventures', 'Sozo Ventures', 'Stride Ventures', 'Venture Catalysts and Naveen Kshatriya', 'Arkam Ventures and NABVENTURES Fund I', 'Beyond Next Ventures, ArthaVida Ventures and Dr. Aniruddha Malpani', 'Suniel Shetty', 'Stride Ventures', 'Indusland Bank', 'Kris Gopalakrishnan’s family office — Pratithi.', 'Anand Mahindra', 'Whiteboard Capital (Sandeep Tandon’s VC fund), FirstCheque, Artha India Ventures, Sweta Rau (Founder, White Ventures), Amrish Rau (CEO Pinelabs, Founder Citrus Pay), Deepak Abbot (Former SVP, Paytm), and Harpreet Singh Grover (Co-founder, Co-Cubes) and others.', 'Tencent, Ark Impact, KoKalyan Krishnamurthy of Flipkart, Sujeet Kumar of Udaan, Gaurav Munjal of Unacademy, Keshav Sanghi of VentureWorks India, Roman Saini of Unacademy, Hemesh Singh of Unacademy, and Sumit Jain of Opentalk amongst others.', 'B Capital Group, Sequoia India, Partners of DST Global, Tencent, GGV, RTP Global, Hummingbird Ventures, Falcon Edge Capital, Rocketship.vc, Unilever Ventures, Kevin Weil, Alexander Will, Kunal Shah, Kunal Bahl, and Rohit Bansal', 'Udaan co-founder, Sujeet Kumar', 'Fullerton Financial Holdings Pte Ltd (FFH) and Bertelsmann India Investments, Sistema Asia Fund and India Quotient.', 'Amit Burman, Chairman of Dabur India,', "RTP Global, lume Ventures, Sequoia Capital India's Surge, Spiral Ventures, and Strive.", 'Steadview Capital', 'Lightspeed Venture Partners, along with the participation of Moonstone Investments, WaterBridge Venture, The Bunting Family Private Fund, and Srivatsan Rajan', 'InnoVen Capital', 'Legend Capital', 'Tencent, Ark Impact, Korea Investment Partners, Samsung Ventures, and Mirae Asset Capital Markets', 'Matrix Partners India, Falcon Edge Capital, WestCap Group, Orios Venture Partners and Smile Group', 'Sequoia Capital India, FMO, Omnivore and AgFunder.', 'Alibaba Group', 'Accel, Zephyr Peacock, Swiggy, and RB Investments', 'Steadview Capital', 'Vertex Ventures Southeast Asia and India and Prime Venture Partners', 'Angel Networks', 'Aavishkaar Capital', 'Advent Management, A91 Emerging Fund, and Trifecta Venture.', 'Vdiec Global', 'Y Combinator, Venture Highway, Sequoia India, and GFC (Global Founders Capital).', 'Lodha Ventures', 'Pawan Munjal Family Trust', 'Ajinkya Rahane', 'Bill & Melinda Gates Foundation', 'GrowX Ventures', 'BAce Capital', 'Tencent Holdings', 'Frontline Strategy Funds and SucSEED Venture Partners.', 'Reliance Industries Limited (RIL)', 'Softbank Vision Fund', 'Pidilite Industries', 'IAN Fund and Al Falaj Investment Co', 'PayU and Fosun RZ Capital', 'Tiger Global Management', 'Susquehanna Growth Equity', 'Sequoia Capital India', 'Vinod Khatumal', 'Sprout Venture Partners', 'Chiratae Ventures', 'Ant Financial', 'Sathguru Catalyzer Advisors', 'Ping An Global Voyager Fund', 'Mumbai Angels, Ravikanth Reddy', 'SAIF Partners, Spring Canter Investment Ltd.', 'Paytm, NPTK, Sabre Partners and Neoplux', 'Vertex Growth Fund', '', 'Ruizheng Investment', 'Manipal Education and Medical Group (MEMG)', 'SoftBank Vision Fund', 'Sequoia, CapitalG, Accel', 'Sauce.vc, Rainforest Ventures', 'Prime Venture Partners, LetsVenture, PS1 Venture and GlobalLogic co-founder Rajul Garg', 'RB Investments', 'DG Daiwa Ventures, DG Incubation', 'Trifecta Capital Advisors', 'FinTech', 'Dream Incubator', 'Altimeter Capital, Sutter Hill Ventures', 'Startup Buddy', 'Lightbox', 'Altimeter Capital, DST Global', 'Ayushmann Khurana', 'Matrix Partners India, Sequoia India', 'SAIF Partners', 'TIW Private Equity', 'Exfinity Venture Partners', 'Breakthrough Energy Ventures', 'Endiya Partners', 'A91 Partners', 'Bennett Coleman and Company Ltd (BCCL)', 'India Quotient, Axilor Ventures', '', 'SC GG India Mobility Holdings LLC', 'Sequoia India', '', 'Azim Premji, Binny Bansal', 'Pine Labs Pte Ltd', 'Naspers', 'MS Dhoni', 'March Capital Partners', 'XL Innovate', 'Rashmi Daga (founder, FreshMenu), Raveen Sastry (co-founder, Myntra) and Mitesh Shah (finance chief, BookMyShow)', 'Lok Capital, IIFL Wealth', 'WaterBridge Ventures', 'Kapil Dev', 'DIG Investment Ab, Deshe Holdings, Samih Toukan and Hussam Khoury', 'March Capital Partners', 'Artha Venture', 'Qatar Investment Authority', 'Composite Capital Management, Sequoia Capital India, Tiger Global Management', 'Undisclosed', 'Ventureast', 'General Atlantic', 'Anicut Capital', 'Goldman Sachs, Accel Partners and Qualcomm', 'Matrix Partners', 'Insight Partners', 'Triton Investment Advisors, Pidilite Industries director Ajay Parekh', 'Blume Ventures and RTP Global', 'Shell Foundation, DILA CAPITAL, Engie RDE Fund, EcoEnterprise Fund, EDFIMC (ElectriFI), Endeavor Catalyst Fund, CoCapital, Triodos, Alpha Mundi, and Lendahand', 'IAN Fund', 'Qiming Venture Partners', 'Tata Sons', 'C4D Partners', 'Indian Angel Network and other angel investors, Innov8 founder Ritesh Malik, Josh Talks founders Supriya Paul and Shobha Banga, and former Hero Corporate president Rohit Chanana', 'Goldman Sachs Investment Partners and Silicon Valley-based Accel, Wellington, Sequoia Capital, B Capital, LightStreet, Sands Capital and International Finance Corporation,', 'Tiger Global Management', 'Sachin Bansal', 'Equanimity Ventures', 'Korea Investment Partners, Vertex Ventures', 'Sixth Sense Ventures', 'Eight Roads', 'Prasid Uno Family Trust', 'Unilever, Beehive Capital Advisor, ABCOM Investments, Parekh Marine Transport,', 'Orchid India, Hornbill Orchid India Fund, Chiratae Ventures (formerly IDG Ventures), 3one4 Capital, Lasmer NV', 'Unnamed angel investors', 'Lightspeed India Partners', 'Milestone', 'Supera Pte Ltd', 'Kalyan Krishnamurthy', 'Sequoia India, Tiger Global Management, Accel Partners', 'India Quotient and LetsVenture’s Angel Fund', 'Sequoia Capital and Temasek Holdings, EDBI, Burda Principal Investments, and Sofina', 'LetsVenture, PitchRight Venture, 91SpringBoard, AL Nour International Holdings and Mark V Investments', 'DiDi Chuxing', 'Sequoia India, Hillhouse Capital, Alphabet’s growth investment arm Capital G and Axis Bank', 'Iron Pillar, Perceptive Advisors, Romulus Capital and Kalaari Capital', 'MASSIF, a Dutch government fund', 'Stellaris Venture Partners', 'Steadview Capital and Vy Capital.', 'Individual Investors', 'Individual Investors', 'Omphalos Ventures India LLP', 'Info Edge, AET Fund, Akatsuki and Incubate Fund from Japan and Better Capital AngelList syndicate.', 'Venture Highway, GREE Ventures, Space Matrix, Individual Investors', 'Lead Angels Network', 'Norwest Venture Partners, CDC Group, the UK’s Development Finance Institution and P Surendra Pai', 'Shunwei Capital, DST Partners and RPS Ventures', 'Undisclosed', 'RB Investments, Singapore', 'Tiger Global', 'Mayfield Fund', 'Stevens Creek Ventures', 'Venture Catalysts', 'SoftBank Vision Fund', 'Prashant Jaiswal', 'Cooperative Oikocredit, Caspian and Hivos-Triodos Fund', 'Ravi Viswanathan', 'ZigExN', 'Credence Family Office', 'Sequoia Capital India', 'Fosun International', 'Sistema Asia Fund, Sistema JSFC and Tanncam Investment', 'DST Global and Lightspeed Venture Partners’ global fund.', 'Falcon Edge', 'N/A', 'Korea Investment Partners (KIP), Samsung and China-based CITIC Capital and others', 'Lighthouse', 'KDDI ', 'Tencent, Kalaari Capital and Private equity firm Multiples Alternate Asset Management', 'Stellaris Ventures & Others', 'CLP Holdings Group, Innogy, Ørstead, and Tenaska', 'Farm To Fork, Arts Alliance, The Syndicate Fund, Sven Hensen, Zeroth and Artesian Venture Partners', 'Axilor, Sprout Venture Partners and others', 'Xiaomi and Sequoia Capital India', 'Y Combinator', 'N/A', 'Fung Strategic Holdings', 'MakeMyTrip Limited', 'Vertex Ventures', 'Sequoia Capital India Advisors, Accel Partners and G Raghunandan', 'Flipkart', 'Y Combinator', 'Ajay Relan and Vinay Mittal', 'MDI Ventures & Telkom Indonesia', 'Shunwei Capital, Tuscan Ventures, Ashish Goenka, VC firms India Quotient and Kae Capital', 'Info Edge (India) Ltd and Temasek', 'Info Edge (India) Ltd', 'Insignia Ventures Partners, Lightbridge Partners & Kairos', 'Avtar Monga, chief operating office at IDFC Bank, Aditya Malik & Others', 'Venture Catalysts', 'ResponsAbility', 'Prashant Jaiswal', 'Cooperative Oikocredit, Caspian and Hivos-Triodos Fund', 'Ravi Viswanathan', 'ZigExN', 'Credence Family Office', 'Sequoia Capital India', 'Fosun International', 'Sistema Asia Fund, Sistema JSFC and Tanncam Investment', 'DST Global and Lightspeed Venture Partners’ global fund.', 'Falcon Edge', 'N/A', 'Korea Investment Partners (KIP), Samsung and China-based CITIC Capital and others', 'Lighthouse', 'KDDI ', 'Tencent, Kalaari Capital and Private equity firm Multiples Alternate Asset Management', 'Stellaris Ventures & Others', 'CLP Holdings Group, Innogy, Ørstead, and Tenaska', 'Farm To Fork, Arts Alliance, The Syndicate Fund, Sven Hensen, Zeroth and Artesian Venture Partners', 'Axilor, Sprout Venture Partners and others', 'Xiaomi and Sequoia Capital India', 'Y Combinator', 'N/A', 'Fung Strategic Holdings', 'MakeMyTrip Limited', 'Vertex Ventures', 'Sequoia Capital India Advisors, Accel Partners and G Raghunandan', 'Flipkart', 'Y Combinator', 'Ajay Relan and Vinay Mittal', 'MDI Ventures & Telkom Indonesia', 'Shunwei Capital, Tuscan Ventures, Ashish Goenka, VC firms India Quotient and Kae Capital', 'Info Edge (India) Ltd and Temasek', 'Info Edge (India) Ltd', 'Insignia Ventures Partners, Lightbridge Partners & Kairos', 'Avtar Monga, chief operating office at IDFC Bank, Aditya Malik & Others', 'Venture Catalysts', 'ResponsAbility', 'Prashant Jaiswal', 'Cooperative Oikocredit, Caspian and Hivos-Triodos Fund', 'Ravi Viswanathan', 'ZigExN', 'Credence Family Office', 'Sequoia Capital India', 'Fosun International', 'Sistema Asia Fund, Sistema JSFC and Tanncam Investment', 'DST Global and Lightspeed Venture Partners’ global fund.', 'Falcon Edge', 'N/A', 'Korea Investment Partners (KIP), Samsung and China-based CITIC Capital and others', 'Lighthouse', 'KDDI ', 'Tencent, Kalaari Capital and Private equity firm Multiples Alternate Asset Management', 'Stellaris Ventures & Others', 'CLP Holdings Group, Innogy, Ørstead, and Tenaska', 'Farm To Fork, Arts Alliance, The Syndicate Fund, Sven Hensen, Zeroth and Artesian Venture Partners', 'Axilor, Sprout Venture Partners and others', 'Xiaomi and Sequoia Capital India', 'Y Combinator', 'N/A', 'Fung Strategic Holdings', 'MakeMyTrip Limited', 'Vertex Ventures', 'Sequoia Capital India Advisors, Accel Partners and G Raghunandan', 'Flipkart', 'Y Combinator', 'Ajay Relan and Vinay Mittal', 'MDI Ventures & Telkom Indonesia', 'Shunwei Capital, Tuscan Ventures, Ashish Goenka, VC firms India Quotient and Kae Capital', 'Info Edge (India) Ltd and Temasek', 'Info Edge (India) Ltd', 'Insignia Ventures Partners, Lightbridge Partners & Kairos', 'Avtar Monga, chief operating office at IDFC Bank, Aditya Malik & Others', 'Venture Catalysts', 'ResponsAbility', 'Prashant Jaiswal', 'Cooperative Oikocredit, Caspian and Hivos-Triodos Fund', 'Ravi Viswanathan', 'ZigExN', 'Credence Family Office', 'Sequoia Capital India', 'Fosun International', 'Sistema Asia Fund, Sistema JSFC and Tanncam Investment', 'DST Global and Lightspeed Venture Partners’ global fund.', 'Falcon Edge', 'N/A', 'Korea Investment Partners (KIP), Samsung and China-based CITIC Capital and others', 'Lighthouse', 'KDDI ', 'Tencent, Kalaari Capital and Private equity firm Multiples Alternate Asset Management', 'Stellaris Ventures & Others', 'CLP Holdings Group, Innogy, Ørstead, and Tenaska', 'Farm To Fork, Arts Alliance, The Syndicate Fund, Sven Hensen, Zeroth and Artesian Venture Partners', 'Axilor, Sprout Venture Partners and others', 'Xiaomi and Sequoia Capital India', 'Y Combinator', 'N/A', 'Fung Strategic Holdings', 'MakeMyTrip Limited', 'Vertex Ventures', 'Sequoia Capital India Advisors, Accel Partners and G Raghunandan', 'Flipkart', 'Y Combinator', 'Ajay Relan and Vinay Mittal', 'MDI Ventures & Telkom Indonesia', 'Shunwei Capital, Tuscan Ventures, Ashish Goenka, VC firms India Quotient and Kae Capital', 'Info Edge (India) Ltd and Temasek', 'Info Edge (India) Ltd', 'Insignia Ventures Partners, Lightbridge Partners & Kairos', 'Avtar Monga, chief operating office at IDFC Bank, Aditya Malik & Others', 'Venture Catalysts', 'ResponsAbility']
+In [10]:
+#scraping the Investment_Type 
+IT=driver.find_elements_by_xpath("//td[@class='column-8']")
+for i in IT:
+    if i.text is None :
+        Investment_Type.append("--") 
+    else:
+        Investment_Type.append(i.text)
+print(len(Investment_Type),Investment_Type)
+371 ['Venture', 'Venture', 'Series C', 'Seed', 'Venture Round', 'Seed Funding', 'Series', 'Seed', 'Funding', 'Secondary Market', 'Series D', 'Seed', 'Secondary Market', 'Series A', 'Seed', 'Series C', 'Bridge Funding', 'Pre-series E', 'Series A', 'Series A', 'Venture', 'Series B', 'Pre-Series A', 'Series C', 'Personal Investment', 'Series B', 'Equity and Debt', 'Seed', 'Series C', 'Debt', 'Series A', '', 'Seed', 'Follow-On', 'Private Equity', 'Series B', 'Angel', 'Series B', 'Series A', 'Debt Financing', 'In Progress', 'Series B', 'Series A', 'Seed', 'Series F', '', 'Series D1', 'In Progress', 'Seed', 'In Progress', '', '', 'Venture', 'Series A', 'M&A', 'Series D', 'pre-Series A', 'Seed', 'pre-Series B', 'Venture-Series Unknown', 'pre-Series A', 'Seed', 'pre-Seed', 'Venture-Series Unknown', 'Series B', 'Debt Financing', 'Seed', 'Pre-Series A', 'Seed', 'Angel', 'Venture - Series Unknown', 'Series C', 'Seed', 'Seed', 'Pre Seed', 'Angel', 'Series B', 'Series A', 'Series D', 'Pre Series A', 'Series A', 'Series F', 'Series C', 'Venture - Series Unknown', 'Series C1', 'Series 1', 'Series A', 'Series A', 'Debt Financing', 'Series C', 'Series F', 'Series A', 'Angel', 'Series A', 'Debt Financing', 'Angel', 'Seed', 'Series A', 'Series B', 'Private Equity', 'Venture Series', 'Seed', 'Pre-Series A', 'Series A', 'Venture Series', 'Venture Series', 'Series E', 'Series F', 'Series A', 'Seed', 'Private Equity Round', 'Series C', 'Series B', 'Pre-series A', 'Seed Round', 'Series A', 'Private Equity Round', 'Series A', 'Series D', 'Seed', 'Series F', 'Series C', 'Series E', 'Debt Funding', 'Seed Round', 'Seed Round', 'Series G', 'Series H', 'Series B', 'Seed', 'Venture', 'Series B', 'Debt Funding', 'Debt Funding', 'Seed Funding', 'Series C', 'Seed', 'Series D', 'Series D', 'Corporate Round', 'Maiden Round', 'Series A', 'Private Equity Round', 'pre-series A', 'Series A', 'Seed', 'Series A', 'Series C', 'Series A', '', 'Series C', 'Series A', 'Seed Funding Round', 'Single Venture', 'Corporate Round', 'Series D', 'Series D', 'Series C', 'Series B', 'Seed Round', 'Series B', 'Pre-Series A', 'Angel', 'Series J', 'Series C', 'Seed Round', 'Private Equity Round', 'Series D', 'Series B', 'Series B', 'Series C', 'Debt Funding', '', 'Series A', 'Series B', 'pre-Series A', 'pre-Series A', '', 'Series A', 'Series B', 'Series A', 'Venture - Series Unknown', 'Bridge Round', 'Series D', 'Series C', 'Series C', 'Seed Round', 'Series B', 'Series B', 'Series A', 'Private Equity', 'Private Equity', 'Series B', 'Seed Funding', 'Seed Funding', 'Debt and Preference capital', 'Inhouse Funding', 'Seed/ Angel Funding', 'Series B', 'Pre Series A', 'Series D', 'Series A', 'Equity', 'Series C', 'Series D', 'Debt-Funding', 'Seed Funding', 'Series D', 'Pre-Series A', 'Pre-Series A', 'Seed Funding', 'Seed Funding', 'Series A', 'Seed/ Angel Funding', 'Series D', 'Series C', 'Series A', 'Equity', 'Series A', 'Series B', 'Mezzanine', 'Seed/ Angel Funding', 'Series B', 'Seed/ Angel Funding', 'Seed/ Angel Funding', 'Private Equity', 'Series E', 'Pre-Series A', 'Private Funding', 'Series C', 'Private Equity', 'Private Equity', 'Private Equity', 'Seed / Angel Funding', 'Private Equity', 'Private Equity', 'Private Equity', 'Private Equity', 'Private Equity', 'Private Equity', 'Seed/ Angel Funding', 'Seed/ Angel Funding', 'Private Equity', 'Private Equity', 'Seed/ Angel Funding', 'Private Equity', 'Private Equity', 'Seed/ Angel Funding', 'Private Equity', 'Private Equity', 'Seed/ Angel Funding', 'Seed/ Angel Funding', 'Private Equity', 'Private Equity', 'Private Equity', 'Seed/ Angel Funding', 'Seed/ Angel Funding', 'Seed/ Angel Funding', 'Seed/ Angel Funding', 'Private Equity', 'Seed/ Angel Funding', 'Seed/ Angel Funding', 'Private Equity', 'Series E', 'Pre-Series A', 'Private Funding', 'Series C', 'Private Equity', 'Private Equity', 'Private Equity', 'Seed / Angel Funding', 'Private Equity', 'Private Equity', 'Private Equity', 'Private Equity', 'Private Equity', 'Private Equity', 'Seed/ Angel Funding', 'Seed/ Angel Funding', 'Private Equity', 'Private Equity', 'Seed/ Angel Funding', 'Private Equity', 'Private Equity', 'Seed/ Angel Funding', 'Private Equity', 'Private Equity', 'Seed/ Angel Funding', 'Seed/ Angel Funding', 'Private Equity', 'Private Equity', 'Private Equity', 'Seed/ Angel Funding', 'Seed/ Angel Funding', 'Seed/ Angel Funding', 'Seed/ Angel Funding', 'Private Equity', 'Seed/ Angel Funding', 'Seed/ Angel Funding', 'Private Equity', 'Series E', 'Pre-Series A', 'Private Funding', 'Series C', 'Private Equity', 'Private Equity', 'Private Equity', 'Seed / Angel Funding', 'Private Equity', 'Private Equity', 'Private Equity', 'Private Equity', 'Private Equity', 'Private Equity', 'Seed/ Angel Funding', 'Seed/ Angel Funding', 'Private Equity', 'Private Equity', 'Seed/ Angel Funding', 'Private Equity', 'Private Equity', 'Seed/ Angel Funding', 'Private Equity', 'Private Equity', 'Seed/ Angel Funding', 'Seed/ Angel Funding', 'Private Equity', 'Private Equity', 'Private Equity', 'Seed/ Angel Funding', 'Seed/ Angel Funding', 'Seed/ Angel Funding', 'Seed/ Angel Funding', 'Private Equity', 'Seed/ Angel Funding', 'Seed/ Angel Funding', 'Private Equity', 'Series E', 'Pre-Series A', 'Private Funding', 'Series C', 'Private Equity', 'Private Equity', 'Private Equity', 'Seed / Angel Funding', 'Private Equity', 'Private Equity', 'Private Equity', 'Private Equity', 'Private Equity', 'Private Equity', 'Seed/ Angel Funding', 'Seed/ Angel Funding', 'Private Equity', 'Private Equity', 'Seed/ Angel Funding', 'Private Equity', 'Private Equity', 'Seed/ Angel Funding', 'Private Equity', 'Private Equity', 'Seed/ Angel Funding', 'Seed/ Angel Funding', 'Private Equity', 'Private Equity', 'Private Equity', 'Seed/ Angel Funding', 'Seed/ Angel Funding', 'Seed/ Angel Funding', 'Seed/ Angel Funding', 'Private Equity']
+In [11]:
+#scraping the Amount 
+Price=driver.find_elements_by_xpath("//td[@class='column-9']")
+for i in Price:
+    if i.text is None :
+        Amount.append("--") 
+    else:
+        Amount.append(i.text)
+print(len(Amount),Amount)
+371 ['1,80,00,000', '6,172,258.50', '30,000,000', '15,000,000', '16,000,000', '15,000,000', '100,000,000', '4,000,000', '1,273,634.07', 'Undisclosed', '160,000,000', '1,000,000', '25,000,000', '15,000,000', '560,000', '80,000,000', '3,000,000', '1,001,047.92', '7,700,000', '6,003,806', '75,000,000-100,000,000', '35,300,000', '3,500,000', '25,000,000', 'NA', '10,000,000', '20,160,000', '5,000,000', '121,000,000', '4,700,000', '15,000,000', '6,000,000', '4,500,000', '4,500,000', '500,000,000', '3,000,000', '370,000', '15,500,000', '4,500,000', 'upto 8,900,000', '100,000,000', '5,400,000', '8,000,000', '950,000', '32,000,000', '23,000,000', '1,560,000', '30,000,000', '1,400,000', 'upto 15,000,000', '6,000,000', '10,670,000', '16,200,000', '5,000,000', '1,200,000,000', '100,000,000', '934,160', '1,700,000', '3,300,000', '400,000', '974,200', '292,800', '200,000', '500,000', '25,000,000', 'NA', 'NA', '3,934,941', 'NA', 'NA', '1,311,647', '5,500,000', '1,000,000', '1,000,000', '340,000', 'NA', '60,000,000', 'NA', '42,000,000', 'NA', '9,000,000', '8,800,000', '4,000,000', '1,700,000', '12,560,000', '43,000,000', '8,000,000', '12,000,000', '50,000,000', '1,800,000', '13,000,000', '6,000,000', 'NA', '5,000,000', '4,000,000', 'NA', '4,700,000', '6,000,000', '1,000,000', 'NA', '10,000,000', 'NA', '3,000,000', '15,000,000', 'NA', '12,625,020', '296,000,000', '37,000,000', '3,000,000', '8,000,000', '200,000,000', '8,048,394', '18,358,860', '3,000,000', '1,800,000', '9,000,000', '150,000,000', '6,000,000', '70,000,000', '50,000,000', '20,000,000', '12,000,000', '30,000,000', '5,900,000', '2,000,000', '50,000,000', '231,000,000', '15,000,0000', '486,000', '1,500,000', 'undisclosed', '12,000,000', '26,000,000', '17,411,265', '1,300,000', '135,000,000', '300,000', '4,50,00,000', '58,50,00,000', 'unknown', '4,500,000', '3,300,000', '6,000,000', '5,000,000', '18,000,000', '10,00,000', '10,000,000', '450,000,000', '5,000,000', '', '20,000,000', '5,000,000', '1,600,000', '140,000,000', '38,080,000', '125,000,000', '11,000,000', '51,000,000', '37,000,000', '500,000', '19,000,000', '2,500,000', '145,000', '1,000,000', '38,080,000', '500,000', '150,000,000', '60,000,000', '16,000,000', '5,750,000', '5,10,00,000', '1,00,00,000', '48,89,975.54', '90,00,000', '7,50,00,000', '26,000,000', '25,00,000', '27,39,034.68', '26,000,000', '1,51,09,500.00', 'undisclosed', '868,600', 'undisclosed', '150,000,000', '50,000,000', '5,10,00,000', '14,00,00,000', '1,15,00,000', '56,00,000', '45,000,000', '17,000,000', '430,665', '3,591,375', '200,000', '3,500,000', '6,320,820', '2,443,495', '307,000', '26,000,000', 'Undisclosed', '226,000,000', '600,000', '100,000,000', '110,000,000', '22,000,000', '5,000,000', '700,000', '50,000,000', '800,000', '572,000', '143,000', '2,000,000', '3,500,000', '1,38,995', '27,799,000', '50,000,000', '5,00,000', '1,000,000', '1,000,000', '1,300,000', '1,000,000', '500,000', '300,000,000', 'N/A', '11,000,000', '8,200,000', '30,00,000', '4,000,000', '14,680,000', '12,000,000', '35,000,000', '225,000,000', '63,90,000', '1,000,000', 'N/A', '15,72,00,000', 'N/A', '100,000,000', '4,000,000', '32,000,000', '400,000', 'N/A', '7,000,000', '120,000', '1,000,000', '35,000,000', '10,000,000', '40,00,000', '12,200,000', '66,000,000', 'N/A', '1,000,000', '4,000,000', '62,50,000', '2,7700,000', '440,000', '1,100,000', '437,000', 'N/A', '5,000,000', 'N/A', '11,000,000', '8,200,000', '30,00,000', '4,000,000', '14,680,000', '12,000,000', '35,000,000', '225,000,000', '63,90,000', '1,000,000', 'N/A', '15,72,00,000', 'N/A', '100,000,000', '4,000,000', '32,000,000', '400,000', 'N/A', '7,000,000', '120,000', '1,000,000', '35,000,000', '10,000,000', '40,00,000', '12,200,000', '66,000,000', 'N/A', '1,000,000', '4,000,000', '62,50,000', '2,7700,000', '440,000', '1,100,000', '437,000', 'N/A', '5,000,000', 'N/A', '11,000,000', '8,200,000', '30,00,000', '4,000,000', '14,680,000', '12,000,000', '35,000,000', '225,000,000', '63,90,000', '1,000,000', 'N/A', '15,72,00,000', 'N/A', '100,000,000', '4,000,000', '32,000,000', '400,000', 'N/A', '7,000,000', '120,000', '1,000,000', '35,000,000', '10,000,000', '40,00,000', '12,200,000', '66,000,000', 'N/A', '1,000,000', '4,000,000', '62,50,000', '2,7700,000', '440,000', '1,100,000', '437,000', 'N/A', '5,000,000', 'N/A', '11,000,000', '8,200,000', '30,00,000', '4,000,000', '14,680,000', '12,000,000', '35,000,000', '225,000,000', '63,90,000', '1,000,000', 'N/A', '15,72,00,000', 'N/A', '100,000,000', '4,000,000', '32,000,000', '400,000', 'N/A', '7,000,000', '120,000', '1,000,000', '35,000,000', '10,000,000', '40,00,000', '12,200,000', '66,000,000', 'N/A', '1,000,000', '4,000,000', '62,50,000', '2,7700,000', '440,000', '1,100,000', '437,000', 'N/A', '5,000,000']
+In [12]:
+Funding=pd.DataFrame([])
+Funding['Company']=Company
+Funding['Industry']=Industry
+Funding['Investor_Name']=Investor_Name
+Funding['Amount Invested']=Amount
+Funding['Specification']=Investment_Type
+Funding['Dates']=Dates
+Funding
+Out[12]:
+	Company	Industry	Investor_Name	Amount Invested	Specification	Dates
+0	Digit Insurance	Financial Services	A91 Partners, Faering Capital, TVS Capital Funds	1,80,00,000	Venture	15/01/2021
+1	Bombay Shaving Company	Consumer Goods Company	Reckitt Benckiser	6,172,258.50	Venture	28/01/2021
+2	DeHaat	AgriTech Startup	Prosus Ventures	30,000,000	Series C	19/01/2021
+3	Darwinbox	SaaS	Salesforce Ventures	15,000,000	Seed	19/01/2021
+4	mfine	Health Tech Startup	Heritas Capital Management	16,000,000	Venture Round	18/01/2021
+...	...	...	...	...	...	...
+366	zippserv	Consumer Internet	Info Edge (India) Ltd	440,000	Seed/ Angel Funding	09/07/2018
+367	Groww	Consumer Internet	Insignia Ventures Partners, Lightbridge Partne...	1,100,000	Seed/ Angel Funding	09/07/2018
+368	Avenue Growth	Consumer Internet	Avtar Monga, chief operating office at IDFC Ba...	437,000	Seed/ Angel Funding	10/07/2018
+369	iNICU	Healthcare	Venture Catalysts	N/A	Seed/ Angel Funding	10/07/2018
+370	Kinara Capital	Finance	ResponsAbility	5,000,000	Private Equity	10/07/2018
+371 rows × 6 columns
+5. Write a program to scrap geospatial coordinates (latitude, longitude) of a city searched on google maps.
+In [9]:
+driver = webdriver.Chrome(r"E:\Madhukar\chromedriver_win32\chromedriver.exe")
+In [11]:
+# opening google maps
+driver.get("https://www.google.co.in/maps")
+time.sleep(3)
+
+city = input('Enter City Name : ')                                         # Enter city to be searched
+search = driver.find_element_by_id("searchboxinput")                       # locating search bar
+search.clear()                                                             # clearing search bar
+time.sleep(2)
+search.send_keys(city)                                                     # entering values in search bar
+button = driver.find_element_by_id("searchbox-searchbutton")               # locating search button
+button.click()                                                             # clicking search button
+time.sleep(3)
+
+try:
+    url_string = driver.current_url
+    print("URL Extracted: ", url_string)
+    lat_lng = re.findall(r'@(.*)data',url_string)
+    if len(lat_lng):
+        lat_lng_list = lat_lng[0].split(",")
+        if len(lat_lng_list)>=2:
+            lat = lat_lng_list[0]
+            lng = lat_lng_list[1]
+        print("Latitude = {}, Longitude = {}".format(lat, lng))
+
+except Exception as e:
+        print("Error: ", str(e))
+Enter City Name : Nagpur
+URL Extracted:  https://www.google.co.in/maps/place/Nagpur,+Maharashtra/@21.1610282,78.9324207,11z/data=!3m1!4b1!4m5!3m4!1s0x3bd4c0a5a31faf13:0x19b37d06d0bb3e2b!8m2!3d21.1458004!4d79.0881546
+Latitude = 21.1610282, Longitude = 78.9324207
+4. Write a python program to search for a smartphone(e.g.: Oneplus Nord, pixel 4A, etc.) on www.flipkart.com and scrape following details for all the search results displayed on 1st page.
+Details to be scraped: “Brand Name”, “Smartphone name”, “Colour”, “RAM”, “Storage(ROM)”, “Primary Camera”, “Secondary Camera”, “Display Size”, “Display Resolution”, “Processor”, “Processor Cores”, “Battery Capacity”, “Price”, “Product URL”. Incase if any of the details is missing then replace it by “- “. Save your results in a dataframe and CSV.
+In [13]:
+driver = webdriver.Chrome(r"E:\Madhukar\chromedriver_win32\chromedriver.exe")
+url4="https://www.flipkart.com/search?q=smartphone&otracker=search&otracker1=search&marketplace=FLIPKART&as-show=on&as=off"
+driver.get(url4)
+In [14]:
+Brand_Name=[]
+Colour=[]
+Storage_RAM_ROM=[]
+P_F_Camera=[]
+Display_size_Resolution=[]
+ProcessorAndCores=[]
+Battery=[]
+Price=[]
+Product_URL=[]
+In [15]:
+#scraping the Brand_Name 
+BName=driver.find_elements_by_xpath("//div[@class='_4rR01T']")
+for i in BName:
+    if i.text is None :
+        Brand_Name.append("--") 
+    else:
+        Brand_Name.append(i.text)
+print(len(Brand_Name),Brand_Name)
+24 ['POCO C3 (Arctic Blue, 64 GB)', 'POCO X3 (Cobalt Blue, 128 GB)', 'POCO C3 (Lime Green, 64 GB)', 'POCO X3 (Shadow Gray, 128 GB)', 'POCO M2 (Slate Blue, 64 GB)', 'Realme Narzo 20 (Glory Silver, 64 GB)', 'POCO C3 (Matte Black, 64 GB)', 'Realme Narzo 20A (Victory Blue, 64 GB)', 'Realme Narzo 20A (Glory Silver, 64 GB)', 'Realme Narzo 20 (Victory Blue, 128 GB)', 'Realme Narzo 20 (Glory Silver, 128 GB)', 'POCO M2 Pro (Green and Greener, 64 GB)', 'Realme 7i (Fusion Blue, 64 GB)', 'POCO M2 Pro (Green and Greener, 64 GB)', 'POCO M2 Pro (Out of the Blue, 64 GB)', 'POCO M2 (Pitch Black, 128 GB)', 'POCO M2 Pro (Two Shades of Black, 64 GB)', 'POCO M2 Pro (Two Shades of Black, 64 GB)', 'Redmi 9i (Nature Green, 64 GB)', 'Infinix Smart 4 Plus (Ocean Wave, 32 GB)', 'POCO X3 (Cobalt Blue, 64 GB)', 'Infinix Smart 4 Plus (Midnight Black, 32 GB)', 'POCO M2 Pro (Out of the Blue, 64 GB)', 'Redmi 9i (Sea Blue, 64 GB)']
+In [18]:
+#scraping the Storage_RAM_ROM 
+ram=driver.find_elements_by_xpath("//ul[@class='_1xgFaf']//li[1]")
+for i in ram:
+    if i.text is None :
+        Storage_RAM_ROM.append("--") 
+    else:
+        Storage_RAM_ROM.append(i.text)
+print(len(Storage_RAM_ROM),Storage_RAM_ROM)
+24 ['4 GB RAM | 64 GB ROM | Expandable Upto 512 GB', '6 GB RAM | 128 GB ROM | Expandable Upto 512 GB', '4 GB RAM | 64 GB ROM | Expandable Upto 512 GB', '6 GB RAM | 128 GB ROM | Expandable Upto 512 GB', '6 GB RAM | 64 GB ROM | Expandable Upto 512 GB', '4 GB RAM | 64 GB ROM | Expandable Upto 256 GB', '4 GB RAM | 64 GB ROM | Expandable Upto 512 GB', '4 GB RAM | 64 GB ROM | Expandable Upto 256 GB', '4 GB RAM | 64 GB ROM | Expandable Upto 256 GB', '4 GB RAM | 128 GB ROM | Expandable Upto 256 GB', '4 GB RAM | 128 GB ROM | Expandable Upto 256 GB', '6 GB RAM | 64 GB ROM | Expandable Upto 512 GB', '4 GB RAM | 64 GB ROM | Expandable Upto 256 GB', '4 GB RAM | 64 GB ROM | Expandable Upto 512 GB', '6 GB RAM | 64 GB ROM | Expandable Upto 512 GB', '6 GB RAM | 128 GB ROM | Expandable Upto 512 GB', '4 GB RAM | 64 GB ROM | Expandable Upto 512 GB', '6 GB RAM | 64 GB ROM | Expandable Upto 512 GB', '4 GB RAM | 64 GB ROM | Expandable Upto 512 GB', '3 GB RAM | 32 GB ROM | Expandable Upto 256 GB', '6 GB RAM | 64 GB ROM | Expandable Upto 512 GB', '3 GB RAM | 32 GB ROM | Expandable Upto 256 GB', '4 GB RAM | 64 GB ROM | Expandable Upto 512 GB', '4 GB RAM | 64 GB ROM | Expandable Upto 512 GB']
+In [19]:
+#scraping the P_F_Camera 
+PC=driver.find_elements_by_xpath("//ul[@class='_1xgFaf']//li[3]")
+for i in PC:
+    if i.text is None :
+        P_F_Camera.append("--") 
+    else:
+        P_F_Camera.append(i.text)
+print(len(P_F_Camera),P_F_Camera)
+24 ['13MP + 2MP + 2MP | 5MP Front Camera', '64MP + 13MP + 2MP + 2MP | 20MP Front Camera', '13MP + 2MP + 2MP | 5MP Front Camera', '64MP + 13MP + 2MP + 2MP | 20MP Front Camera', '13MP + 8MP + 5MP + 2MP | 8MP Front Camera', '48MP + 8MP + 2MP | 8MP Front Camera', '13MP + 2MP + 2MP | 5MP Front Camera', '12MP + 2MP + 2MP | 8MP Front Camera', '12MP + 2MP + 2MP | 8MP Front Camera', '48MP + 8MP + 2MP | 8MP Front Camera', '48MP + 8MP + 2MP | 8MP Front Camera', '48MP + 8MP + 5MP + 2MP | 16MP Front Camera', '64MP + 8MP + 2MP + 2MP | 16MP Front Camera', '48MP + 8MP + 5MP + 2MP | 16MP Front Camera', '48MP + 8MP + 5MP + 2MP | 16MP Front Camera', '13MP + 8MP + 5MP + 2MP | 8MP Front Camera', '48MP + 8MP + 5MP + 2MP | 16MP Front Camera', '48MP + 8MP + 5MP + 2MP | 16MP Front Camera', '13MP Rear Camera | 5MP Front Camera', '13MP + Depth Sensor | 8MP Front Camera', '64MP + 13MP + 2MP + 2MP | 20MP Front Camera', '13MP + Depth Sensor | 8MP Front Camera', '48MP + 8MP + 5MP + 2MP | 16MP Front Camera', '13MP Rear Camera | 5MP Front Camera']
+In [20]:
+#scraping the Display_size_Resolution 
+DS=driver.find_elements_by_xpath("//ul[@class='_1xgFaf']//li[2]")
+for i in DS:
+    if i.text is None :
+        Display_size_Resolution.append("--") 
+    else:
+        Display_size_Resolution.append(i.text)
+print(len(Display_size_Resolution),Display_size_Resolution)
+24 ['16.59 cm (6.53 inch) HD+ Display', '16.94 cm (6.67 inch) Full HD+ Display', '16.59 cm (6.53 inch) HD+ Display', '16.94 cm (6.67 inch) Full HD+ Display', '16.59 cm (6.53 inch) Full HD+ Display', '16.56 cm (6.52 inch) HD+ Display', '16.59 cm (6.53 inch) HD+ Display', '16.51 cm (6.5 inch) HD+ Display', '16.51 cm (6.5 inch) HD+ Display', '16.56 cm (6.52 inch) HD+ Display', '16.56 cm (6.52 inch) HD+ Display', '16.94 cm (6.67 inch) Full HD+ Display', '16.51 cm (6.5 inch) HD+ Display', '16.94 cm (6.67 inch) Full HD+ Display', '16.94 cm (6.67 inch) Full HD+ Display', '16.59 cm (6.53 inch) Full HD+ Display', '16.94 cm (6.67 inch) Full HD+ Display', '16.94 cm (6.67 inch) Full HD+ Display', '16.59 cm (6.53 inch) HD+ Display', '17.32 cm (6.82 inch) HD+ Display', '16.94 cm (6.67 inch) Full HD+ Display', '17.32 cm (6.82 inch) HD+ Display', '16.94 cm (6.67 inch) Full HD+ Display', '16.59 cm (6.53 inch) HD+ Display']
+In [21]:
+#scraping the ProcessorAndCores 
+P=driver.find_elements_by_xpath("//ul[@class='_1xgFaf']//li[5]")
+for i in P:
+    if i.text is None :
+        ProcessorAndCores.append("--") 
+    else:
+        ProcessorAndCores.append(i.text)
+print(len(ProcessorAndCores),ProcessorAndCores)
+24 ['Mediatek Helio G35 Processor', 'Qualcomm Snapdragon 732G Processor', 'Mediatek Helio G35 Processor', 'Qualcomm Snapdragon 732G Processor', 'MediaTek Helio G80 Processor', 'MediaTek Helio G85 Processor', 'Mediatek Helio G35 Processor', 'Qualcomm Snapdragon 665 Processor', 'Qualcomm Snapdragon 665 Processor', 'MediaTek Helio G85 Processor', 'MediaTek Helio G85 Processor', 'Qualcomm Snapdragon 720G Processor', 'Qualcomm Snapdragon 662 Processor', 'Qualcomm Snapdragon 720G Processor', 'Qualcomm Snapdragon 720G Processor', 'MediaTek Helio G80 Processor', 'Qualcomm Snapdragon 720G Processor', 'Qualcomm Snapdragon 720G Processor', 'MediaTek Helio G25 Processor', 'Mediatek Helio A25 Processor', 'Qualcomm Snapdragon 732G Processor', 'Mediatek Helio A25 Processor', 'Qualcomm Snapdragon 720G Processor', 'MediaTek Helio G25 Processor']
+In [22]:
+#scraping the Battery 
+B=driver.find_elements_by_xpath("//ul[@class='_1xgFaf']//li[4]")
+for i in B:
+    if i.text is None :
+        Battery.append("--") 
+    else:
+        Battery.append(i.text)
+print(len(Battery),Battery)
+24 ['5000 mAh Li-ion Polymer Battery', '6000 mAh Lithium-ion Polymer Battery', '5000 mAh Li-ion Polymer Battery', '6000 mAh Lithium-ion Polymer Battery', '5000 mAh Lithium Polymer Battery', '6000 mAh Lithium-ion Battery', '5000 mAh Li-ion Polymer Battery', '5000 mAh Lithium-ion Battery', '5000 mAh Lithium-ion Battery', '6000 mAh Lithium-ion Battery', '6000 mAh Lithium-ion Battery', '5000 mAh Lithium-ion Polymer Battery', '5000 mAh Lithium-ion Battery', '5000 mAh Lithium-ion Polymer Battery', '5000 mAh Lithium-ion Polymer Battery', '5000 mAh Lithium Polymer Battery', '5000 mAh Lithium-ion Polymer Battery', '5000 mAh Lithium-ion Polymer Battery', '5000 mAh Lithium Polymer Battery', '6000 mAh Lithium-ion Polymer Battery', '6000 mAh Lithium-ion Polymer Battery', '6000 mAh Lithium-ion Polymer Battery', '5000 mAh Lithium-ion Polymer Battery', '5000 mAh Lithium Polymer Battery']
+In [23]:
+#scraping the Price 
+price=driver.find_elements_by_xpath("//div[@class='_30jeq3 _1_WHN1']")
+for i in price:
+    if i.text is None :
+        Price.append("--") 
+    else:
+        Price.append(i.text)
+print(len(Price),Price)
+24 ['₹7,999', '₹15,999', '₹7,999', '₹15,999', '₹9,999', '₹10,499', '₹7,999', '₹9,499', '₹9,499', '₹11,499', '₹11,499', '₹12,999', '₹11,999', '₹11,999', '₹12,999', '₹10,999', '₹11,999', '₹12,999', '₹8,299', '₹7,999', '₹14,999', '₹7,999', '₹11,999', '₹8,299']
+In [31]:
+FlipKart=pd.DataFrame([])
+FlipKart['Brand_Name']=Brand_Name
+FlipKart['Storage_RAM_ROM']=Storage_RAM_ROM
+FlipKart['Amount P_F_Camera']=P_F_Camera
+FlipKart['Display_size_Resolution']=Display_size_Resolution
+FlipKart['ProcessorAndCores']=ProcessorAndCores
+FlipKart['Battery']=Battery
+FlipKart['Price']=Price
+
+FlipKart
+Out[31]:
+	Brand_Name	Storage_RAM_ROM	Amount P_F_Camera	Display_size_Resolution	ProcessorAndCores	Battery	Price
+0	POCO C3 (Arctic Blue, 64 GB)	4 GB RAM | 64 GB ROM | Expandable Upto 512 GB	13MP + 2MP + 2MP | 5MP Front Camera	16.59 cm (6.53 inch) HD+ Display	Mediatek Helio G35 Processor	5000 mAh Li-ion Polymer Battery	₹7,999
+1	POCO X3 (Cobalt Blue, 128 GB)	6 GB RAM | 128 GB ROM | Expandable Upto 512 GB	64MP + 13MP + 2MP + 2MP | 20MP Front Camera	16.94 cm (6.67 inch) Full HD+ Display	Qualcomm Snapdragon 732G Processor	6000 mAh Lithium-ion Polymer Battery	₹15,999
+2	POCO C3 (Lime Green, 64 GB)	4 GB RAM | 64 GB ROM | Expandable Upto 512 GB	13MP + 2MP + 2MP | 5MP Front Camera	16.59 cm (6.53 inch) HD+ Display	Mediatek Helio G35 Processor	5000 mAh Li-ion Polymer Battery	₹7,999
+3	POCO X3 (Shadow Gray, 128 GB)	6 GB RAM | 128 GB ROM | Expandable Upto 512 GB	64MP + 13MP + 2MP + 2MP | 20MP Front Camera	16.94 cm (6.67 inch) Full HD+ Display	Qualcomm Snapdragon 732G Processor	6000 mAh Lithium-ion Polymer Battery	₹15,999
+4	POCO M2 (Slate Blue, 64 GB)	6 GB RAM | 64 GB ROM | Expandable Upto 512 GB	13MP + 8MP + 5MP + 2MP | 8MP Front Camera	16.59 cm (6.53 inch) Full HD+ Display	MediaTek Helio G80 Processor	5000 mAh Lithium Polymer Battery	₹9,999
+5	Realme Narzo 20 (Glory Silver, 64 GB)	4 GB RAM | 64 GB ROM | Expandable Upto 256 GB	48MP + 8MP + 2MP | 8MP Front Camera	16.56 cm (6.52 inch) HD+ Display	MediaTek Helio G85 Processor	6000 mAh Lithium-ion Battery	₹10,499
+6	POCO C3 (Matte Black, 64 GB)	4 GB RAM | 64 GB ROM | Expandable Upto 512 GB	13MP + 2MP + 2MP | 5MP Front Camera	16.59 cm (6.53 inch) HD+ Display	Mediatek Helio G35 Processor	5000 mAh Li-ion Polymer Battery	₹7,999
+7	Realme Narzo 20A (Victory Blue, 64 GB)	4 GB RAM | 64 GB ROM | Expandable Upto 256 GB	12MP + 2MP + 2MP | 8MP Front Camera	16.51 cm (6.5 inch) HD+ Display	Qualcomm Snapdragon 665 Processor	5000 mAh Lithium-ion Battery	₹9,499
+8	Realme Narzo 20A (Glory Silver, 64 GB)	4 GB RAM | 64 GB ROM | Expandable Upto 256 GB	12MP + 2MP + 2MP | 8MP Front Camera	16.51 cm (6.5 inch) HD+ Display	Qualcomm Snapdragon 665 Processor	5000 mAh Lithium-ion Battery	₹9,499
+9	Realme Narzo 20 (Victory Blue, 128 GB)	4 GB RAM | 128 GB ROM | Expandable Upto 256 GB	48MP + 8MP + 2MP | 8MP Front Camera	16.56 cm (6.52 inch) HD+ Display	MediaTek Helio G85 Processor	6000 mAh Lithium-ion Battery	₹11,499
+10	Realme Narzo 20 (Glory Silver, 128 GB)	4 GB RAM | 128 GB ROM | Expandable Upto 256 GB	48MP + 8MP + 2MP | 8MP Front Camera	16.56 cm (6.52 inch) HD+ Display	MediaTek Helio G85 Processor	6000 mAh Lithium-ion Battery	₹11,499
+11	POCO M2 Pro (Green and Greener, 64 GB)	6 GB RAM | 64 GB ROM | Expandable Upto 512 GB	48MP + 8MP + 5MP + 2MP | 16MP Front Camera	16.94 cm (6.67 inch) Full HD+ Display	Qualcomm Snapdragon 720G Processor	5000 mAh Lithium-ion Polymer Battery	₹12,999
+12	Realme 7i (Fusion Blue, 64 GB)	4 GB RAM | 64 GB ROM | Expandable Upto 256 GB	64MP + 8MP + 2MP + 2MP | 16MP Front Camera	16.51 cm (6.5 inch) HD+ Display	Qualcomm Snapdragon 662 Processor	5000 mAh Lithium-ion Battery	₹11,999
+13	POCO M2 Pro (Green and Greener, 64 GB)	4 GB RAM | 64 GB ROM | Expandable Upto 512 GB	48MP + 8MP + 5MP + 2MP | 16MP Front Camera	16.94 cm (6.67 inch) Full HD+ Display	Qualcomm Snapdragon 720G Processor	5000 mAh Lithium-ion Polymer Battery	₹11,999
+14	POCO M2 Pro (Out of the Blue, 64 GB)	6 GB RAM | 64 GB ROM | Expandable Upto 512 GB	48MP + 8MP + 5MP + 2MP | 16MP Front Camera	16.94 cm (6.67 inch) Full HD+ Display	Qualcomm Snapdragon 720G Processor	5000 mAh Lithium-ion Polymer Battery	₹12,999
+15	POCO M2 (Pitch Black, 128 GB)	6 GB RAM | 128 GB ROM | Expandable Upto 512 GB	13MP + 8MP + 5MP + 2MP | 8MP Front Camera	16.59 cm (6.53 inch) Full HD+ Display	MediaTek Helio G80 Processor	5000 mAh Lithium Polymer Battery	₹10,999
+16	POCO M2 Pro (Two Shades of Black, 64 GB)	4 GB RAM | 64 GB ROM | Expandable Upto 512 GB	48MP + 8MP + 5MP + 2MP | 16MP Front Camera	16.94 cm (6.67 inch) Full HD+ Display	Qualcomm Snapdragon 720G Processor	5000 mAh Lithium-ion Polymer Battery	₹11,999
+17	POCO M2 Pro (Two Shades of Black, 64 GB)	6 GB RAM | 64 GB ROM | Expandable Upto 512 GB	48MP + 8MP + 5MP + 2MP | 16MP Front Camera	16.94 cm (6.67 inch) Full HD+ Display	Qualcomm Snapdragon 720G Processor	5000 mAh Lithium-ion Polymer Battery	₹12,999
+18	Redmi 9i (Nature Green, 64 GB)	4 GB RAM | 64 GB ROM | Expandable Upto 512 GB	13MP Rear Camera | 5MP Front Camera	16.59 cm (6.53 inch) HD+ Display	MediaTek Helio G25 Processor	5000 mAh Lithium Polymer Battery	₹8,299
+19	Infinix Smart 4 Plus (Ocean Wave, 32 GB)	3 GB RAM | 32 GB ROM | Expandable Upto 256 GB	13MP + Depth Sensor | 8MP Front Camera	17.32 cm (6.82 inch) HD+ Display	Mediatek Helio A25 Processor	6000 mAh Lithium-ion Polymer Battery	₹7,999
+20	POCO X3 (Cobalt Blue, 64 GB)	6 GB RAM | 64 GB ROM | Expandable Upto 512 GB	64MP + 13MP + 2MP + 2MP | 20MP Front Camera	16.94 cm (6.67 inch) Full HD+ Display	Qualcomm Snapdragon 732G Processor	6000 mAh Lithium-ion Polymer Battery	₹14,999
+21	Infinix Smart 4 Plus (Midnight Black, 32 GB)	3 GB RAM | 32 GB ROM | Expandable Upto 256 GB	13MP + Depth Sensor | 8MP Front Camera	17.32 cm (6.82 inch) HD+ Display	Mediatek Helio A25 Processor	6000 mAh Lithium-ion Polymer Battery	₹7,999
+22	POCO M2 Pro (Out of the Blue, 64 GB)	4 GB RAM | 64 GB ROM | Expandable Upto 512 GB	48MP + 8MP + 5MP + 2MP | 16MP Front Camera	16.94 cm (6.67 inch) Full HD+ Display	Qualcomm Snapdragon 720G Processor	5000 mAh Lithium-ion Polymer Battery	₹11,999
+23	Redmi 9i (Sea Blue, 64 GB)	4 GB RAM | 64 GB ROM | Expandable Upto 512 GB	13MP Rear Camera | 5MP Front Camera	16.59 cm (6.53 inch) HD+ Display	MediaTek Helio G25 Processor	5000 mAh Lithium Polymer Battery	₹8,299
+3. Write a python program to access the search bar and search button on images.google.com and scrape 100 images each for keywords ‘fruits’, ‘cars’ and ‘Machine Learning’.
+In [4]:
+driver.get('https://images.google.com/')
+In [32]:
+search_bar = driver.find_element_by_xpath('//*[@id="sbtc"]/div/div[2]/input')    # Finding the search bar using it's xpath
+search_bar.send_keys("fruits")       # Inputing "banana" keyword to search rock images
+search_button = driver.find_element_by_xpath('//*[@id="sbtc"]/button')    # Finding the xpath of search button
+search_button.click()        # Clicking the search button
+In [33]:
+print("start scrolling to generate more images on the page...")
+# 500 time we scroll down by 10000 in order to generate more images on the website
+for _ in range(500):
+    driver.execute_script("window.scrollBy(0,10000)")
+start scrolling to generate more images on the page...
+In [37]:
+ images = driver.find_elements_by_xpath('//img[@class="rg_i Q4LuWd"]')
+In [38]:
+img_urls = []
+img_data = []
+for image in images:
+    source= image.get_attribute('src')
+    if source is not None:
+        if(source[0:4] == 'http'):
+            img_urls.append(source)
+len(img_urls)
+Out[38]:
+180
+In [42]:
+for i in range(len(img_urls)):
+    if i >= 100:
+        break
+    print("Downloading {0} of {1} images" .format(i, 100))
+    response= requests.get(img_urls[i])
+    file = open("H:/Flip ROBO/banana/img"+str(i)+".jpg", "wb")
+    file.write(response.content)
+Downloading 0 of 100 images
+Downloading 1 of 100 images
+Downloading 2 of 100 images
+Downloading 3 of 100 images
+Downloading 4 of 100 images
+Downloading 5 of 100 images
+Downloading 6 of 100 images
+Downloading 7 of 100 images
+Downloading 8 of 100 images
+Downloading 9 of 100 images
+Downloading 10 of 100 images
+Downloading 11 of 100 images
+Downloading 12 of 100 images
+Downloading 13 of 100 images
+Downloading 14 of 100 images
+Downloading 15 of 100 images
+Downloading 16 of 100 images
+Downloading 17 of 100 images
+Downloading 18 of 100 images
+Downloading 19 of 100 images
+Downloading 20 of 100 images
+Downloading 21 of 100 images
+Downloading 22 of 100 images
+Downloading 23 of 100 images
+Downloading 24 of 100 images
+Downloading 25 of 100 images
+Downloading 26 of 100 images
+Downloading 27 of 100 images
+Downloading 28 of 100 images
+Downloading 29 of 100 images
+Downloading 30 of 100 images
+Downloading 31 of 100 images
+Downloading 32 of 100 images
+Downloading 33 of 100 images
+Downloading 34 of 100 images
+Downloading 35 of 100 images
+Downloading 36 of 100 images
+Downloading 37 of 100 images
+Downloading 38 of 100 images
+Downloading 39 of 100 images
+Downloading 40 of 100 images
+Downloading 41 of 100 images
+Downloading 42 of 100 images
+Downloading 43 of 100 images
+Downloading 44 of 100 images
+Downloading 45 of 100 images
+Downloading 46 of 100 images
+Downloading 47 of 100 images
+Downloading 48 of 100 images
+Downloading 49 of 100 images
+Downloading 50 of 100 images
+Downloading 51 of 100 images
+Downloading 52 of 100 images
+Downloading 53 of 100 images
+Downloading 54 of 100 images
+Downloading 55 of 100 images
+Downloading 56 of 100 images
+Downloading 57 of 100 images
+Downloading 58 of 100 images
+Downloading 59 of 100 images
+Downloading 60 of 100 images
+Downloading 61 of 100 images
+Downloading 62 of 100 images
+Downloading 63 of 100 images
+Downloading 64 of 100 images
+Downloading 65 of 100 images
+Downloading 66 of 100 images
+Downloading 67 of 100 images
+Downloading 68 of 100 images
+Downloading 69 of 100 images
+Downloading 70 of 100 images
+Downloading 71 of 100 images
+Downloading 72 of 100 images
+Downloading 73 of 100 images
+Downloading 74 of 100 images
+Downloading 75 of 100 images
+Downloading 76 of 100 images
+Downloading 77 of 100 images
+Downloading 78 of 100 images
+Downloading 79 of 100 images
+Downloading 80 of 100 images
+Downloading 81 of 100 images
+Downloading 82 of 100 images
+Downloading 83 of 100 images
+Downloading 84 of 100 images
+Downloading 85 of 100 images
+Downloading 86 of 100 images
+Downloading 87 of 100 images
+Downloading 88 of 100 images
+Downloading 89 of 100 images
+Downloading 90 of 100 images
+Downloading 91 of 100 images
+Downloading 92 of 100 images
+Downloading 93 of 100 images
+Downloading 94 of 100 images
+Downloading 95 of 100 images
+Downloading 96 of 100 images
+Downloading 97 of 100 images
+Downloading 98 of 100 images
+Downloading 99 of 100 images
+In [ ]:
+ 
+Quetions 1 & 2
+In [4]:
+driver.get('https://www.amazon.in/')
+In [5]:
+inputU = input('please enter product here--->')
+please enter product here--->HEADPHONES
+In [6]:
+search_bar = driver.find_element_by_xpath('//*[@id="twotabsearchtextbox"]')    # Finding the search bar using it's xpath
+search_bar.send_keys(inputU)       # Inputing keyword to search 
+search_button = driver.find_element_by_xpath('//*[@id="nav-search-submit-button"]')    # Finding the xpath of search button
+search_button.click()        # Clicking the search button
+In [7]:
+productName=[]
+In [9]:
+#scraping the Product_Name 
+PName=driver.find_elements_by_xpath("//span[@class='a-size-medium a-color-base a-text-normal']")
+for i in PName:
+    if i.text is None :
+        productName.append("--") 
+    else:
+        productName.append(i.text)
+print(len(productName),productName)
+23 ['DIGITEK DBH 006 Over-Ear Bluetooth 5.0 Headphone | with Extra Bass | Upto 10 Hrs. Playtime | Dual Pairing | in-Built Mic | and Noise Cancellation (Black) (DBH 006)', 'Noise Shots XO Wireless Bluetooth Earbuds with Great Call Quality, Stunning Look, IPX7 Waterproof & Up to 36 Hour Playtime (Rose Gold)', 'boAt Bassheads 900 On Ear Wired Headphones(Carbon Black)', 'Zebronics Zeb-Thunder Wireless BT Headphone Comes with 40mm Drivers, AUX Connectivity, Built in FM, Call Function, 9Hrs* Playback time and Supports Micro SD Card (Red)', 'boAt Bassheads 100 in Ear Wired Earphones with Mic(Black)', 'Fire-Boltt Blast 1400 Over -Ear Bluetooth Wireless Headphones with 25H Playtime, Thumping Bass, Lightweight Foldable Compact Design with Google/Siri Voice Assistance', 'Lopina SH-12 Wireless Universal Bluetooth Headphone Headset with FM and SD Card Slot for Music and Calling Control (Black)', 'boAt Rockerz 450 Bluetooth On-Ear Headphone with Mic(Luscious Black)', 'JBL C100SI In-Ear Deep Bass Headphones with Mic (Black)', 'boAt Rockerz 550 Over-Ear Wireless Headphone with Ergonomic Aesthetics, Plush Padded Earcups, Immersive Audio, Bluetooth v5.0 & Upto 20H Playback (Black)', 'Sony MDR-ZX110A On-Ear Stereo Headphones (White), without mic', 'Aftershokz Trekz Titanium Wireless Bone Conduction Bluetooth Headphones with Mic (Grey)', 'Noise Tune Sport 2 in-Ear Wireless Bluetooth Earphones with Deep Bass, in-Built mic, 10 mm Speaker Drivers (Midnight Black)', 'pTron Tangent Lite Bluetooth 5.0 Wireless Headphones with Hi-Fi Stereo Sound, 6Hrs Playtime, Lightweight Ergonomic Neckband, Sweat-Resistant Magnetic Earbuds, Voice Assistant & Mic - (Black)', 'pTron Boom Ultima 4D Dual Driver, in-Ear Gaming Wired Headphones with in-line Mic, Volume Control & Passive Noise Cancelling Boom 3 Earphones - (Dark Blue)', 'boAt Rockerz 255 Sports in-Ear Bluetooth Neckband Earphone with Mic (Active Black)', 'Cosmic Byte GS410 Headphones with Mic and for PS4, Xbox One, Laptop, PC, iPhone and Android Phones (Black/Blue)', 'Boult Audio Bass Buds Q2 Over-Ear Wired Lightweight Stereo Headphones, Deep Bass & in-Built Mic, Headset with Comfortable Ear Cushions, Long Cord (Black)', 'Techfire Wireless High Resolution in-Ear Headphones, Upgraded Wireless Headphones with Bluetooth 5.0, Neckband Design (Bluetooth, Headset Function)(Color AS PER AVAILIBILITY)(H.Ear in 2)', 'boAt Bassheads 900 On Ear Wired Headphones(Pearl White)', 'Sony MDR-EX150AP Wired In-Ear Headphones with tangle free cable, 3.5mm Jack, Headset with Mic for phone calls and 1 Year Warranty - (Black)', 'Motorola Vervebuds100 -True Wireless Earbuds, 14H Play Time with Charging Case - with IPX5 Waterproof & Sweatproof Design, Works with Alexa - Comfortable Fit -Black', 'WeCool Moonwalk Mini TWS Bluetooth Earphones or True Wireless Earbuds with Magnetic Charging Case, IPX5 Wireless Earphones with Digital Battery Indicator for Crisp and Clear Sound, Secure Sports Fit']
+In [ ]:
+ 
+In [ ]:
+ 
+In [ ]:
+ 
+In [ ]:
+ 
+Quetion - 2
+In [24]:
+start_page = 0
+end_page = 3
+urls = []
+for page in range(start_page,end_page+1):
+    try:
+        page_urls = driver.find_elements_by_xpath('//a[@class="a-link-normal s-no-outline"]')
+        
+        # appending all the urls on current page to urls list
+        for url in page_urls:
+            url = url.get_attribute('href')     # Scraping the url from webelement
+            if url[0:4]=='http':                # Checking if the scraped data is a valid url or not
+                urls.append(url)                # Appending the url to urls list
+        print("Product urls of page {} has been scraped.".format(page+1))
+        
+        # Moving to next page
+        nxt_button = driver.find_element_by_xpath('//li[@class="a-last"]/a')      # Locating the next_button which is active
+        if nxt_button.text == 'Next→':                                            # Checking if the button located is next button
+            nxt_button.click()                                                    # Clicking the next button
+            time.sleep(5)                                                         # time delay of 5 seconds
+        # If the current active button is not next button, the we will check if the next button is inactive or not    
+        elif driver.find_element_by_xpath('//li[@class="a-disabled a-last"]/a').text == 'Next→':    
+            print("No new pages exist. Breaking the loop")  # Printing message and breakinf loop if we have reached the last page
+            break
+            
+    except StaleElementReferenceException as e:             # Handling StaleElement Exception   
+        print("Stale Exception")
+        next_page = nxt_button.get_attribute('href')        # Extracting the url of next page
+        driver.get(next_page)                               # ReLoading the next page
+Product urls of page 1 has been scraped.
+Product urls of page 2 has been scraped.
+Product urls of page 3 has been scraped.
+Product urls of page 4 has been scraped.
+In [25]:
+prod_dict = {}
+prod_dict['Brand']=[]
+prod_dict['Name']=[]
+prod_dict['Rating']=[]
+prod_dict['No. of ratings']=[]
+prod_dict['Price']=[]
+prod_dict['Return/Exchange']=[]
+prod_dict['Expected Delivery']=[] 
+prod_dict['Availability']=[]
+prod_dict['Other Details']=[]
+prod_dict['URL']=[]
+In [26]:
+for url in urls[:4]:
+    driver.get(url)                                                        # Loading the webpage by url
+    print("Scraping URL = ", url)
+    #time.sleep(2)
+    
+    try:
+        brand = driver.find_element_by_xpath('//a[@id="bylineInfo"]')      # Extracting Brand from xpath
+        prod_dict['Brand'].append(brand.text)
+    except NoSuchElementException:
+        prod_dict['Brand'].append('-')
+    
+    try:
+        name = driver.find_element_by_xpath('//h1[@id="title"]/span')      # Extracting Name from xpath
+        prod_dict['Name'].append(name.text)
+    except NoSuchElementException:
+        prod_dict['Name'].append('-')
+    
+    try:
+        rating = driver.find_element_by_xpath('//span[@id="acrPopover"]')  # Extracting Ratings from xpath
+        prod_dict['Rating'].append(rating.get_attribute("title"))
+    except NoSuchElementException:
+        prod_dict['Rating'].append('-')
+    
+    try:
+        n_rating = driver.find_element_by_xpath('//a[@id="acrCustomerReviewLink"]/span')     # Extracting no. of Ratings from xpath
+        prod_dict['No. of ratings'].append(n_rating.text)
+    except NoSuchElementException:
+        prod_dict['No. of ratings'].append('-')
+    
+    try:
+        price = driver.find_element_by_xpath('//span[@id="priceblock_ourprice"]')            # Extracting Price from xpath
+        prod_dict['Price'].append(price.text)
+    except NoSuchElementException:
+        prod_dict['Price'].append('-')
+    try:                                                                                     # Extracting Return/Exchange policy from xpath
+        ret = driver.find_element_by_xpath('//div[@data-name="RETURNS_POLICY"]/span/div[2]/a')
+        prod_dict['Return/Exchange'].append(ret.text)
+    except NoSuchElementException:
+        prod_dict['Return/Exchange'].append('-')
+    try:
+        delivry = driver.find_element_by_xpath('//div[@id="ddmDeliveryMessage"]/b')         # Extracting Expected Delivery from xpath
+        prod_dict['Expected Delivery'].append(delivry.text)
+    except NoSuchElementException:
+        prod_dict['Expected Delivery'].append('-')
+    
+    try:
+        avl = driver.find_element_by_xpath('//div[@id="availability"]/span')                # Extracting Availability from xpath
+        prod_dict['Availability'].append(avl.text)
+    except NoSuchElementException:
+        prod_dict['Availability'].append('-')
+    
+    try:                                                                                    # Extracting Other Details from xpath
+        dtls = driver.find_element_by_xpath('//ul[@class="a-unordered-list a-vertical a-spacing-mini"]')
+        prod_dict['Other Details'].append('  ||  '.join(dtls.text.split('\n')))
+    except NoSuchElementException:
+        prod_dict['Other Details'].append('-')
+    
+    prod_dict['URL'].append(url)                                                            # Saving url
+    time.sleep(2)
+Scraping URL =  https://www.amazon.in/gp/slredirect/picassoRedirect.html/ref=pa_sp_atf_aps_sr_pg1_1?ie=UTF8&adId=A085294410XQP79XPOYXD&url=%2FAmazonBasics-Wireless-Mouse-Nano-Receiver%2Fdp%2FB01NADN0Q1%2Fref%3Dsr_1_1_sspa%3Fdchild%3D1%26keywords%3Dmouse%26qid%3D1605693329%26sr%3D8-1-spons%26psc%3D1&qualifier=1605693328&id=8807434880200311&widgetName=sp_atf
+Scraping URL =  https://www.amazon.in/gp/slredirect/picassoRedirect.html/ref=pa_sp_atf_aps_sr_pg1_1?ie=UTF8&adId=A014876910SWTBTTV2M73&url=%2FLogitech-Silent-Wireless-Mouse-Charcoal%2Fdp%2FB01M72LILF%2Fref%3Dsr_1_2_sspa%3Fdchild%3D1%26keywords%3Dmouse%26qid%3D1605693329%26sr%3D8-2-spons%26psc%3D1&qualifier=1605693328&id=8807434880200311&widgetName=sp_atf
+Scraping URL =  https://www.amazon.in/HP-X1000-Wired-Mouse-Black/dp/B009VCGPSY/ref=sr_1_3?dchild=1&keywords=mouse&qid=1605693329&sr=8-3
+Scraping URL =  https://www.amazon.in/Dell-Ms116-275-BBCB-Optical-Mouse/dp/B012DT5U96/ref=sr_1_4?dchild=1&keywords=mouse&qid=1605693329&sr=8-4
+In [27]:
+prod_df = pd.DataFrame.from_dict(prod_dict)
+prod_df
+Out[27]:
+	Brand	Name	Rating	No. of ratings	Price	Return/Exchange	Expected Delivery	Availability	Other Details	URL
+0	Brand: AmazonBasics	AmazonBasics Wireless Mouse with Nano Receiver...	4.2 out of 5 stars	27,544 ratings	₹ 1,149.00	10 Days Replacement	Friday, Nov 20	In stock.	Smooth, precise and affordable wireless optica...	https://www.amazon.in/gp/slredirect/picassoRed...
+1	Visit the Logitech Store	Logitech M221 Wireless Mouse, Silent Buttons, ...	4.5 out of 5 stars	4,049 ratings	₹ 849.00	10 Days Replacement	Saturday, Nov 21	In stock.	Ultra-quiet mouse with 90% reduced click sound...	https://www.amazon.in/gp/slredirect/picassoRed...
+2	Visit the HP Store	HP X1000 Wired Mouse (Black/Grey)	4.3 out of 5 stars	16,728 ratings	₹ 349.00	10 Days Replacement	Friday, Nov 20	In stock.	3 buttons improve productivity || Optical se...	https://www.amazon.in/HP-X1000-Wired-Mouse-Bla...
+3	Visit the Dell Store	Dell MS116 Optical Mouse	4.5 out of 5 stars	2,312 ratings	₹ 307.00	10 Days Replacement	Friday, Nov 20	In stock.	Compatible with practically any system || Pl...	https://www.amazon.in/Dell-Ms116-275-BBCB-Opti...
+In [ ]:
+#saving data to csv
+prod_df.to_csv('Amazon_{}.csv'.format(user_inp))
+
+F
